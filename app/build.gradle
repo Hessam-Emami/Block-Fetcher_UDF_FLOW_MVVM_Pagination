@@ -1,45 +1,144 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs'
+    id 'dagger.hilt.android.plugin'
+    id "io.gitlab.arturbosch.detekt"
+    id 'kotlin-parcelize'
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion androidCompileSdkVersion
+    buildToolsVersion androidBuildToolsVersion
 
     defaultConfig {
         applicationId "com.emami.blockfetcher"
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion androidMinSdkVersion
+        targetSdkVersion androidTargetSdkVersion
+        versionCode appVersionCode
+        versionName appVersionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", "\"API_KEY\"")
+        buildConfigField "String", "BASE_URL", "\"BASE_URL\""
     }
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            debuggable true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
+        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
+    }
+
+    packagingOptions {
+        exclude "DebugProbesKt.bin"
+    }
+
+    buildFeatures {
+        viewBinding true
     }
 }
 
 dependencies {
+    implementation libraries.kotlinStdLib
+    implementation libraries.ktxCore
+    implementation libraries.appCompat
+    implementation libraries.constraintLayout
+    implementation libraries.legacySupport
+    implementation libraries.materialDesign
+    implementation libraries.glide
+    implementation libraries.fragment
+    implementation libraries.androidSecurity
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.2'
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation libraries.retrofit
+    implementation libraries.moshiConverterFactory
+    implementation libraries.loggingInterceptor
+    implementation libraries.dagger
+    implementation libraries.daggerHilt
+    implementation libraries.daggerHiltAndroid
+    implementation libraries.timber
+    implementation libraries.coroutineCore
+    implementation libraries.coroutineAndroid
+    implementation libraries.coroutineCallAdapter
+    implementation libraries.gson
+
+    coreLibraryDesugaring libraries.jdkDesugar
+
+    //Jetpack
+    implementation archComponentLibraries.navFragment
+    implementation archComponentLibraries.navUi
+    implementation archComponentLibraries.lifecycleViewModel
+    implementation archComponentLibraries.lifecyclerLiveData
+    implementation archComponentLibraries.lifecycleRuntime
+    implementation archComponentLibraries.room
+    implementation archComponentLibraries.roomKtx
+    implementation archComponentLibraries.paging
+
+    //Kapt
+    kapt libraries.daggerCompiler
+    kapt libraries.daggerHiltCompiler
+    kapt libraries.daggerHiltAndroidCompiler
+    kapt archComponentLibraries.roomCompiler
+    kapt libraries.glideCompiler
+
+    //Test
+    testImplementation testLibraries.junit4
+    testImplementation testLibraries.mockito
+    testImplementation testLibraries.archCoreTesting
+    testImplementation testLibraries.coroutineTest
+    testImplementation testLibraries.roboElectric
+    testImplementation testLibraries.junit4
+    testImplementation testLibraries.androidXextJunit
+    testImplementation testLibraries.androidXCoreKtx
+    testImplementation testLibraries.androidXextJunit
+    testImplementation testLibraries.mockWebServer
+    testImplementation testLibraries.faker
+
+    androidTestImplementation testLibraries.androidXextJunit
+    androidTestImplementation testLibraries.espresso_core
+    debugImplementation(testLibraries.fragmentTesting) {
+        exclude group: 'androidx.test', module: 'monitor'
+    }
+    androidTestImplementation testLibraries.navTesting
+    androidTestImplementation testLibraries.mockito
+    androidTestImplementation testLibraries.mockitoDexMaker
+    implementation testLibraries.idlingResource
+
+    detektPlugins buildPlugins.detektFormatting
+
+
 }
+
+//Detekt  ###################################################################################################################
+detekt {
+    failFast = true // fail build on any finding
+    buildUponDefaultConfig = true // preconfigure defaults
+    config = files("$projectDir/config/detekt.yml")
+    // point to your custom config defining rules to run, overwriting default behavior
+    baseline = file("$projectDir/config/baseline.xml")
+    // a way of suppressing issues before introducing detekt
+
+    reports {
+        html.enabled = true // observe findings in your browser with structure and code snippets
+        xml.enabled = true // checkstyle like format mainly for integrations like Jenkins
+        txt.enabled = true
+        // similar to the console output, contains issue signature to manually edit baseline files
+    }
+}
+tasks.detekt.jvmTarget = "1.8"
