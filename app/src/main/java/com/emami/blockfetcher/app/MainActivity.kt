@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private fun initNavController() {
         navController =
                 (supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment).navController
-        initNavController()
         setupActionBarWithNavController(
                 navController)
     }
