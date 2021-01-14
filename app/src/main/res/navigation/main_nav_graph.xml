@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_nav_graph">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/exploreFragment">
 
+    <fragment
+        android:id="@+id/exploreFragment"
+        android:name="com.emami.blockfetcher.explore.ui.ExploreFragment"
+        android:label="explore_fragment"
+        tools:layout="@layout/explore_fragment" />
 </navigation>

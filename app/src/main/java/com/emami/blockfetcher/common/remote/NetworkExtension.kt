@@ -13,7 +13,7 @@ internal fun <T> (() -> Response<T>).safeApiCall(): Result<T> =
     }
 
 
-//Extracted from GithubBrowserSample project
+//Inspired by GithubBrowserSample project (Official Jetpack Sample)
 private fun <T> create(throwable: Throwable): Result<T> {
     return Result.Error(
         throwable.message ?: "unknown error"
