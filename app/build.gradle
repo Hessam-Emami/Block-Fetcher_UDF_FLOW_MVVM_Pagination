@@ -28,7 +28,6 @@ android {
     buildTypes {
         release {
             minifyEnabled true
-            debuggable true
             shrinkResources true
             proguardFiles getDefaultProguardFile(
                     'proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -65,6 +64,7 @@ dependencies {
     implementation libraries.glide
     implementation libraries.fragment
     implementation libraries.androidSecurity
+    implementation libraries.activityKtx
 
     implementation libraries.retrofit
     implementation libraries.moshiConverterFactory
