@@ -8,6 +8,6 @@
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.emami.blockfetcher.explore.ui.ExploreFragment"
-        android:label="explore_fragment"
+        android:label="Explore"
         tools:layout="@layout/explore_fragment" />
 </navigation>
