@@ -1,13 +1,11 @@
 package com.emami.blockfetcher.explore.data.model
 
 
-fun LatitudeLongitude.toServerInputCoordinates() = "${this.lat}.${this.lng}"
-
 /**
  * Converts all of this class properties and values into a Map<String,String> in order to pass
  * to the remote service as query params
  *
- * THIS IS ONLY FOR DEMONSTRATION, so i only converted required params!
+ * Only for demonstration purpose! , so i only converted these 4 required params below.
  */
 
 fun ExploreQueryDto.convertToMap(): Map<String, String?> {
@@ -18,3 +16,7 @@ fun ExploreQueryDto.convertToMap(): Map<String, String?> {
         ExploreQueryDto.PARAM_OFFSET to paginationOffset.toString()
     )
 }
+
+fun LatitudeLongitude.toServerInputCoordinates() = "${this.lat},${this.lng}"
+
+fun ExploreResponseDto.Venue.toVenueEntity() = VenueEntity(id, name)
