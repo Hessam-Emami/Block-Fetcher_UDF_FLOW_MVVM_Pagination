@@ -4,9 +4,9 @@ import com.emami.blockfetcher.common.base.Result
 import retrofit2.Response
 import timber.log.Timber
 
-internal fun <T> (() -> Response<T>).safeApiCall(): Result<T> =
+internal inline fun <T> invokeApiCall(remoteCall: () -> Response<T>): Result<T> =
     try {
-        create(this())
+        create(remoteCall())
     } catch (e: Exception) {
         //Timber may log exception into our Crash Analytics Provider (ex. Crashlytics, Flurry, etc)
         Timber.e(e)
@@ -16,9 +16,11 @@ internal fun <T> (() -> Response<T>).safeApiCall(): Result<T> =
 
 //Inspired by GithubBrowserSample project
 private fun <T> create(throwable: Throwable): Result<T> {
-    return Result.Error(
-        throwable.message ?: "Unknown error"
-    )
+    //Throw internally related exceptions for now!
+//    return Result.Error(
+//        throwable.message ?: "Unknown error"
+//    )
+    throw throwable
 }
 
 private fun <T> create(response: Response<T>): Result<T> {

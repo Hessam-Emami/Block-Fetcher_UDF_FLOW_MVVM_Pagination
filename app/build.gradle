@@ -21,8 +21,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "API_KEY", "\"API_KEY\"")
-        buildConfigField "String", "BASE_URL", "\"BASE_URL\""
+        buildConfigField("String", "CLIENT_ID", "\"RPRWWJ2JH3YMXUO3BFMP1GFPG4MYLD2M322LNMG5CWS3IHTC\"")
+        buildConfigField("String", "CLIENT_SECRET", "\"YZC04XS42PDXJHV3NGASUF1YOUTP4XTXZXHOL03HMU4YBJMY\"")
+        buildConfigField "String", "BASE_URL", "\"https://api.foursquare.com/\""
     }
 
     buildTypes {

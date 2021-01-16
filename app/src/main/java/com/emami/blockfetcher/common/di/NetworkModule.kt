@@ -1,6 +1,7 @@
 package com.emami.blockfetcher.common.di
 
 import com.emami.blockfetcher.BuildConfig
+import com.emami.blockfetcher.common.Constants
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -35,14 +36,22 @@ object NetworkModule {
     }
 
     @Provides
-    @Named("interceptor_header_token")
+    @Named("interceptor_common_query_params")
     @Singleton
-    internal fun provideTokenHeaderInterceptor(): Interceptor =
+    internal fun provideCommonQueryParamsInterceptor(
+        @Named("constant_client_id") clientId: String,
+        @Named("constant_client_secret") clientSecret: String,
+        @Named("constant_api_version") version: String,
+    ): Interceptor =
         Interceptor { chain ->
             val request = chain.request()
-            val token = BuildConfig.API_KEY
-            val newRequest =
-                chain.request().newBuilder().addHeader("Authorization", "Bearer $token").build()
+            val newUrl =
+                request.url.newBuilder()
+                    .addQueryParameter(Constants.QUERY_CLIENT_ID, clientId)
+                    .addQueryParameter(Constants.QUERY_CLIENT_SECRET, clientSecret)
+                    .addQueryParameter(Constants.QUERY_VERSION, version)
+                    .build()
+            val newRequest = request.newBuilder().url(newUrl).build()
             chain.proceed(newRequest)
         }
 
@@ -52,7 +61,7 @@ object NetworkModule {
     fun provideOkHttpClient(
         @Named("interceptor_logging") loggingInterceptor: Interceptor,
         @Named("interceptor_header_accept") acceptHeaderInterceptor: Interceptor,
-        @Named("interceptor_header_token") tokenHeaderInterceptor: Interceptor
+        @Named("interceptor_common_query_params") tokenHeaderInterceptor: Interceptor,
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(acceptHeaderInterceptor)
