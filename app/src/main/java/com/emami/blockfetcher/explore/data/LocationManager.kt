@@ -4,10 +4,12 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
+import com.emami.blockfetcher.common.exception.UnknownLastLocationException
 import com.emami.blockfetcher.explore.data.model.LatitudeLongitude
 import com.google.android.gms.location.FusedLocationProviderClient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -30,7 +32,7 @@ class LocationManager @Inject constructor(
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            ) continuation.cancel(RuntimeException("Location permission is not granted"))
+            ) continuation.cancel(UnknownLastLocationException())
 
             // Add listeners that will resume the execution of this coroutine
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
@@ -38,8 +40,11 @@ class LocationManager @Inject constructor(
                 continuation.resume(LatitudeLongitude(location.latitude, location.longitude))
             }.addOnFailureListener { e ->
                 // Resume the coroutine by throwing an exception
-                continuation.resumeWithException(e)
+                //Log actual exception to Crashlytics but return custom exception instead!
+                Timber.e(e)
+                continuation.resumeWithException(UnknownLastLocationException())
             }
         }
 
 }
+
