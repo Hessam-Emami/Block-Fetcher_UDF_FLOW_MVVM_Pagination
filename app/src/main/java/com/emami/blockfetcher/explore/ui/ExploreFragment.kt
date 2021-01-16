@@ -7,27 +7,35 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.emami.blockfetcher.R
+import androidx.lifecycle.lifecycleScope
+import com.emami.blockfetcher.databinding.ExploreFragmentBinding
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
     private val viewModel: ExploreViewModel by viewModels()
-    private var requestPermissionLauncher: ActivityResultLauncher<String>? = null
 
+    //According to the docs, this doesn't need to detach
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        return inflater.inflate(R.layout.explore_fragment, container, false)
-    }
+    @Inject
+    lateinit var locationProviderClient: FusedLocationProviderClient
+
+    private var _binding: ExploreFragmentBinding? = null
+    private val binding get() = _binding!!
+
 
     override fun onStart() {
         super.onStart()
@@ -38,15 +46,28 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
+        viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
         if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
             onLocationPermissionAvailable()
         }
     }
 
+    private fun renderEffect(viewEffect: ExploreViewModel.ExploreViewEffect) {
+        when (viewEffect) {
+            is ExploreViewModel.ExploreViewEffect.Error -> Snackbar.make(requireView(),
+                viewEffect.string,
+                Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
+        binding.progressBar.visibility = if (viewState.isLoading) View.VISIBLE else View.GONE
+//        binding.noData.visibility = if (viewState.list) View.VISIBLE else View.GONE
+    }
+
     private fun onLocationPermissionAvailable() {
-
-        Toast.makeText(requireContext(), "Permission Granted", Toast.LENGTH_SHORT).show()
-
+        viewModel.init()
     }
 
     override fun onAttach(context: Context) {
@@ -73,11 +94,6 @@ class ExploreFragment : Fragment() {
             .show()
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        requestPermissionLauncher = null
-    }
-
     private fun isPermissionGranted(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(
             requireContext(),
@@ -95,7 +111,7 @@ class ExploreFragment : Fragment() {
         val isGranted: Boolean = isPermissionGranted(permission)
         when {
             !isGranted -> {
-                requestPermissionLauncher?.launch(permission)
+                requestPermissionLauncher.launch(permission)
             }
             shouldShowRequestPermissionRationale(permission) -> {
                 //Show an explanation before requesting!
@@ -110,7 +126,22 @@ class ExploreFragment : Fragment() {
             .setMessage("Block Fetcher needs to access you're location in order to find the nearest venues for you")
             .setPositiveButton(
                 "Okay"
-            ) { _, _ -> requestPermissionLauncher?.launch(permission) }
+            ) { _, _ -> requestPermissionLauncher.launch(permission) }
             .show()
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        _binding = ExploreFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }
