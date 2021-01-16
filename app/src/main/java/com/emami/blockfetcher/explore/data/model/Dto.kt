@@ -12,7 +12,8 @@ import com.google.gson.annotations.SerializedName
  *  3. Mapping is auto generated and is not written by hand!
  */
 
-data class ExploreResponse(
+//region Explore remote service response
+data class ExploreResponseDto(
     @SerializedName("meta") val meta: Meta,
     @SerializedName("response") val response: Response,
 ) {
@@ -126,3 +127,48 @@ data class ExploreResponse(
         @SerializedName("text") val text: String,
     )
 }
+//endregion
+
+data class ExploreQueryDto(
+    // in form of: lat.lang
+    @SerializedName(PARAM_LAT_LANG) val coordinates: String,
+    //Pass 0/1 flag
+    @SerializedName(PARAM_DISTANCE_SORT) val sortByDistance: Int,
+    @SerializedName(PARAM_LIMIT) val paginationResultCount: Int,
+    @SerializedName(PARAM_OFFSET) val paginationOffset: Int,
+//---------------------------------- OPTIONAL PARAMS ----------------------------------
+    @SerializedName("near") val near: String? = null,
+    @SerializedName("llAcc") val coordinatesAccuracy: Double? = null,
+    @SerializedName("alt") val altitude: Int? = null,
+    @SerializedName("altAcc") val altitudeAccuracy: Double? = null,
+    @SerializedName("radius") val radius: Int? = null,
+    //This is an enum type, no need to specify for now
+    @SerializedName("section") val venueType: String? = null,
+    @SerializedName("categoryId") val categoryId: String? = null,
+    @SerializedName("query") val query: String? = null,
+    //This is an enum type, no need to specify for now
+    @SerializedName("novelty") val noveltyType: String? = null,
+    //This is an enum type, no need to specify for now
+    @SerializedName("friendVisits") val friendVisits: String? = null,
+    @SerializedName("time") val time: String? = null,
+    @SerializedName("day") val day: String? = null,
+    @SerializedName("lastVenue") val lastVenue: String? = null,
+    //Pass 0/1 flag
+    @SerializedName("openNow") val openNow: Int? = null,
+    //Pass 0/1 flag
+    @SerializedName("sortByPopularity") val sortByPopularity: Int? = null,
+    @SerializedName("price") val price: Double? = null,
+    //Pass 0/1 flag
+    @SerializedName("saved") val saved: Int? = null,
+) {
+    /**
+     * We don't need other params, this is just for demonstration
+     */
+    companion object {
+        const val PARAM_LAT_LANG = "ll"
+        const val PARAM_DISTANCE_SORT = "sortByDistance"
+        const val PARAM_LIMIT = "limit"
+        const val PARAM_OFFSET = "offset"
+    }
+}
+
