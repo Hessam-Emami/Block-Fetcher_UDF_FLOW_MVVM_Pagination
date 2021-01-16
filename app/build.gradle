@@ -65,6 +65,7 @@ dependencies {
     implementation libraries.fragment
     implementation libraries.androidSecurity
     implementation libraries.activityKtx
+    implementation libraries.playServicesLocation
 
     implementation libraries.retrofit
     implementation libraries.moshiConverterFactory

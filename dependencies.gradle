@@ -76,7 +76,7 @@ ext {
     coroutineVersion = '1.4.2'
     coroutineAdapterVersion = '0.9.2'
     timberVersion = '4.7.1'
-    gmsVersion = '17.0.0'
+    gmsVersion = '17.1.0'
     desugarVersion = '1.0.9'
     glideVersion = "4.11.0"
     hiltVersion = "1.0.0-alpha02"
@@ -115,7 +115,7 @@ ext {
             coroutineCore            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion",
             coroutineAndroid         : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion",
             coroutineCallAdapter     : "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:$coroutineAdapterVersion",
-            playServices             : "com.google.android.gms:play-services-location:$gmsVersion"
+            playServicesLocation             : "com.google.android.gms:play-services-location:$gmsVersion"
     ]
 
     //Test Libraries  ###################################################################################################################
