@@ -48,11 +48,11 @@ data class ExploreResponseDto(
 
     data class Item(
         @SerializedName("reasons") val reasons: Reason?,
-        @SerializedName("venue") val venue: Venue,
+        @SerializedName("venue") val venue: VenueDTO,
     )
 
 
-    data class Venue(
+    data class VenueDTO(
         @SerializedName("id") val id: String,
         @SerializedName("name") val name: String,
         @SerializedName("location") val location: Location,

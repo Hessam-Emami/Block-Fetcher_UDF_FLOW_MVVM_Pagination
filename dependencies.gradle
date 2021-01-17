@@ -38,7 +38,7 @@ ext {
 
     //Architecture Component Libraries  ###################################################################################################################
 
-    pagingVersion = "3.0.0-alpha10"
+    pagingVersion = "3.0.0-alpha12"
     prefVersion = "1.1.0"
     lifecyleExtensionVersion = '2.2.0'
     room_version = "2.3.0-alpha03"

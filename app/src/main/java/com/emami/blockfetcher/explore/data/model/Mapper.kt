@@ -19,4 +19,10 @@ fun ExploreQueryDto.convertToMap(): Map<String, String?> {
 
 fun LatitudeLongitude.toServerInputCoordinates() = "${this.lat},${this.lng}"
 
-fun ExploreResponseDto.Venue.toVenueEntity() = VenueEntity(id, name)
+fun ExploreResponseDto.VenueDTO.toVenueEntity() = VenueEntity(id, name)
+
+fun VenueEntity.toDomain() =
+    Venue(id,
+        Location(LatitudeLongitude(2.2, 2.2), "No.13, November Alley, Alex St.", 1200),
+        emptyList(),
+        name)

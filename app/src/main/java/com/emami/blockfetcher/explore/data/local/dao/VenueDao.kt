@@ -13,8 +13,11 @@ interface VenueDao {
     suspend fun insertAll(venues: List<VenueEntity>)
 
     @Query("SELECT * FROM venue")
-    fun getAllVenues(): PagingSource<Int, VenueEntity>
+    fun getAllVenuesPaged(): PagingSource<Int, VenueEntity>
 
     @Query("DELETE FROM venue")
     suspend fun clearTable()
+
+    @Query("SELECT * FROM venue")
+    fun getAllVenues(): List<VenueEntity>
 }

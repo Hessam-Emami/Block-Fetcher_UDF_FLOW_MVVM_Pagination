@@ -1,7 +1,8 @@
 package com.emami.blockfetcher.common
 
 object Constants {
-    const val DEFAULT_PAGE_SIZE = 25
+    const val DEFAULT_PREFETCH_DISTANCE = 1
+    const val DEFAULT_PAGE_SIZE = 10
 
     const val PREF_NAME = "apps-pref"
 
