@@ -1,11 +1,11 @@
-package com.emami.blockfetcher.explore.data
+package com.emami.blockfetcher.venue.data
 
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.emami.blockfetcher.common.exception.UnknownLastLocationException
-import com.emami.blockfetcher.explore.data.model.LatitudeLongitude
+import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import com.google.android.gms.location.FusedLocationProviderClient
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.suspendCancellableCoroutine

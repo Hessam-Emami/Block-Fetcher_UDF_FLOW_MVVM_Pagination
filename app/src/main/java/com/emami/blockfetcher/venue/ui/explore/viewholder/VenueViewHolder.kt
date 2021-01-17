@@ -1,8 +1,8 @@
-package com.emami.blockfetcher.explore.ui.viewholder
+package com.emami.blockfetcher.venue.ui.explore.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
 import com.emami.blockfetcher.databinding.ExploreItemVenueBinding
-import com.emami.blockfetcher.explore.data.model.Venue
+import com.emami.blockfetcher.venue.data.model.Venue
 import timber.log.Timber
 
 class VenueViewHolder(val binding: ExploreItemVenueBinding) :

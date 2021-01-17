@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.data.model
+package com.emami.blockfetcher.venue.data.model
 
 
 /**
@@ -26,3 +26,9 @@ fun VenueEntity.toDomain() =
         Location(LatitudeLongitude(2.2, 2.2), "No.13, November Alley, Alex St.", 1200),
         emptyList(),
         name)
+
+fun List<ExploreResponseDto.Group>.toVenueDTOList(): List<ExploreResponseDto.VenueDTO> =
+    this.asSequence()
+        .flatMap { it.items }
+        .map { it.venue }
+        .toList()

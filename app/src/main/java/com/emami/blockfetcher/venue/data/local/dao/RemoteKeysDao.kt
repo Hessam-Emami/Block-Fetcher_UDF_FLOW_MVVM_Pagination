@@ -1,10 +1,10 @@
-package com.emami.blockfetcher.explore.data.local.dao
+package com.emami.blockfetcher.venue.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.emami.blockfetcher.explore.data.model.RemoteKeysEntity
+import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
 
 @Dao
 interface RemoteKeysDao {

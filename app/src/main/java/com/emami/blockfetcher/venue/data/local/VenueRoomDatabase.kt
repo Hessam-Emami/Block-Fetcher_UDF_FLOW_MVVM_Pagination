@@ -1,13 +1,13 @@
-package com.emami.blockfetcher.explore.data.local
+package com.emami.blockfetcher.venue.data.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.emami.blockfetcher.explore.data.local.dao.RemoteKeysDao
-import com.emami.blockfetcher.explore.data.local.dao.VenueDao
-import com.emami.blockfetcher.explore.data.model.RemoteKeysEntity
-import com.emami.blockfetcher.explore.data.model.VenueEntity
+import com.emami.blockfetcher.venue.data.local.dao.RemoteKeysDao
+import com.emami.blockfetcher.venue.data.local.dao.VenueDao
+import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
+import com.emami.blockfetcher.venue.data.model.VenueEntity
 
 @Database(entities = [RemoteKeysEntity::class, VenueEntity::class],
     version = 1,

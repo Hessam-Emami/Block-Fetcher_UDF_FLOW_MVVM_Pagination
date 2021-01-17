@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.ui
+package com.emami.blockfetcher.venue.ui.explore
 
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
@@ -7,9 +7,9 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.emami.blockfetcher.common.exception.UnknownLastLocationException
-import com.emami.blockfetcher.explore.data.ExploreRepository
-import com.emami.blockfetcher.explore.data.LocationManager
-import com.emami.blockfetcher.explore.data.model.Venue
+import com.emami.blockfetcher.venue.data.ExploreRepository
+import com.emami.blockfetcher.venue.data.LocationManager
+import com.emami.blockfetcher.venue.data.model.Venue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

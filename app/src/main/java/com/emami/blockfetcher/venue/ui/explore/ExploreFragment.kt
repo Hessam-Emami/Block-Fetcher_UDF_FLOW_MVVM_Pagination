@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.ui
+package com.emami.blockfetcher.venue.ui.explore
 
 import android.Manifest
 import android.content.Context
@@ -16,8 +16,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.emami.blockfetcher.databinding.ExploreFragmentBinding
-import com.emami.blockfetcher.explore.ui.adapter.VenuePagingAdapter
-import com.emami.blockfetcher.explore.ui.adapter.VenuePagingLoadStateAdapter
+import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingAdapter
+import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingLoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,8 +67,8 @@ class ExploreFragment : Fragment() {
     private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
         venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, viewState.list)
         binding.progressBar.visibility = if (viewState.isLoading) View.VISIBLE else View.GONE
-        binding.noData.visibility =
-            if (venuePagingAdapter.itemCount == 0) View.VISIBLE else View.GONE
+//        binding.noData.visibility =
+//            if (binding.pagingRecyclerView.childCount > 0) View.GONE else View.VISIBLE
     }
 
     @ExperimentalPagingApi

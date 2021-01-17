@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.data.model
+package com.emami.blockfetcher.venue.data.model
 
 data class Venue(
     val id: String,

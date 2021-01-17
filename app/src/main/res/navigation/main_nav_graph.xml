@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/exploreFragment"
-        android:name="com.emami.blockfetcher.explore.ui.ExploreFragment"
+        android:name="com.emami.blockfetcher.venue.ui.explore.ExploreFragment"
         android:label="Discover Venues"
         tools:layout="@layout/explore_fragment" />
 </navigation>

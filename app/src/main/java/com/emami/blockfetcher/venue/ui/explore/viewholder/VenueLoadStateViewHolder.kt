@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.ui.viewholder
+package com.emami.blockfetcher.venue.ui.explore.viewholder
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

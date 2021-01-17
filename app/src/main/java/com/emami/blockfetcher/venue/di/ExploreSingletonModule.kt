@@ -1,7 +1,7 @@
-package com.emami.blockfetcher.explore.di
+package com.emami.blockfetcher.venue.di
 
 import android.content.Context
-import com.emami.blockfetcher.explore.data.local.VenueRoomDatabase
+import com.emami.blockfetcher.venue.data.local.VenueRoomDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

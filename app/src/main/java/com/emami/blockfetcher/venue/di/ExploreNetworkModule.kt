@@ -1,6 +1,6 @@
-package com.emami.blockfetcher.explore.di
+package com.emami.blockfetcher.venue.di
 
-import com.emami.blockfetcher.explore.data.network.VenueService
+import com.emami.blockfetcher.venue.data.network.VenueService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

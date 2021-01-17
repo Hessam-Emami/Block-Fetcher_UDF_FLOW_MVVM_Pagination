@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.explore.data
+package com.emami.blockfetcher.venue.data
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
@@ -6,9 +6,9 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.common.base.Result
-import com.emami.blockfetcher.explore.data.local.LocalDataSource
-import com.emami.blockfetcher.explore.data.model.*
-import com.emami.blockfetcher.explore.data.network.RemoteDataSource
+import com.emami.blockfetcher.venue.data.local.LocalDataSource
+import com.emami.blockfetcher.venue.data.model.*
+import com.emami.blockfetcher.venue.data.network.RemoteDataSource
 import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
@@ -45,11 +45,8 @@ class VenueRemoteMediator(
             networkService.explore(query, page, Constants.DEFAULT_PAGE_SIZE)) {
             is Result.Success -> {
                 val venueDtos: List<ExploreResponseDto.VenueDTO> =
-                    apiResult.body.response.groups
-                        .asSequence()
-                        .flatMap { it.items }
-                        .map { it.venue }
-                        .toList()
+                    apiResult.body.response.groups.toVenueDTOList()
+
                 val endOfPaginationReached = venueDtos.isEmpty()
                 //Invalidate local cache if we are resubmitting paging
                 if (loadType == LoadType.REFRESH) {

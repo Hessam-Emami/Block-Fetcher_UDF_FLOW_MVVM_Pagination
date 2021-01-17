@@ -1,13 +1,13 @@
-package com.emami.blockfetcher.explore.data
+package com.emami.blockfetcher.venue.data
 
 import androidx.paging.*
 import com.emami.blockfetcher.common.Constants
-import com.emami.blockfetcher.explore.data.local.LocalDataSource
-import com.emami.blockfetcher.explore.data.model.LatitudeLongitude
-import com.emami.blockfetcher.explore.data.model.Venue
-import com.emami.blockfetcher.explore.data.model.VenueEntity
-import com.emami.blockfetcher.explore.data.model.toDomain
-import com.emami.blockfetcher.explore.data.network.RemoteDataSource
+import com.emami.blockfetcher.venue.data.local.LocalDataSource
+import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
+import com.emami.blockfetcher.venue.data.model.Venue
+import com.emami.blockfetcher.venue.data.model.VenueEntity
+import com.emami.blockfetcher.venue.data.model.toDomain
+import com.emami.blockfetcher.venue.data.network.RemoteDataSource
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

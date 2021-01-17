@@ -1,6 +1,6 @@
-package com.emami.blockfetcher.explore.data.network
+package com.emami.blockfetcher.venue.data.network
 
-import com.emami.blockfetcher.explore.data.model.ExploreResponseDto
+import com.emami.blockfetcher.venue.data.model.ExploreResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.QueryMap

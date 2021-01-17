@@ -1,12 +1,12 @@
-package com.emami.blockfetcher.explore.ui.adapter
+package com.emami.blockfetcher.venue.ui.explore.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.emami.blockfetcher.databinding.ExploreItemVenueBinding
-import com.emami.blockfetcher.explore.data.model.Venue
-import com.emami.blockfetcher.explore.ui.viewholder.VenueViewHolder
+import com.emami.blockfetcher.venue.data.model.Venue
+import com.emami.blockfetcher.venue.ui.explore.viewholder.VenueViewHolder
 
 class VenuePagingAdapter() :
     PagingDataAdapter<Venue, VenueViewHolder>(DiffCallback) {

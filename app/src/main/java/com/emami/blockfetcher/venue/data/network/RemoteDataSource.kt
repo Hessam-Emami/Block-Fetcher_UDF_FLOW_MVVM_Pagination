@@ -1,8 +1,8 @@
-package com.emami.blockfetcher.explore.data.network
+package com.emami.blockfetcher.venue.data.network
 
 import com.emami.blockfetcher.common.base.Result
 import com.emami.blockfetcher.common.extensions.invokeApiCall
-import com.emami.blockfetcher.explore.data.model.*
+import com.emami.blockfetcher.venue.data.model.*
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 

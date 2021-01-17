@@ -1,9 +1,9 @@
-package com.emami.blockfetcher.explore.ui.adapter
+package com.emami.blockfetcher.venue.ui.explore.adapter
 
 import android.view.ViewGroup
 import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
-import com.emami.blockfetcher.explore.ui.viewholder.VenueLoadStateViewHolder
+import com.emami.blockfetcher.venue.ui.explore.viewholder.VenueLoadStateViewHolder
 
 // Adapter that displays a loading spinner when
 // state = LoadState.Loading, and an error message and retry
