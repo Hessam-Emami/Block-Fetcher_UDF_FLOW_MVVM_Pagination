@@ -18,4 +18,9 @@
         <!-- Other       -->
         <item name="android:colorBackground">@color/white_two</item>
     </style>
+
+
+    <style name="ThemeOverlay.BlockFetcher.Progressbar" parent="">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+    </style>
 </resources>

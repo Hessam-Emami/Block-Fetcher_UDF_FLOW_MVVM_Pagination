@@ -3,15 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".explore.ui.ExploreFragment">
 
 
     <ProgressBar
+        android:theme="@style/ThemeOverlay.BlockFetcher.Progressbar"
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/movie_recycler_view_discover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:itemCount="14"
+        tools:listitem="@layout/explore_item_venue" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/noData"
@@ -19,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="No data available to be shown"
+        android:text="@string/no_data"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:visibility="gone" />
 </FrameLayout>
