@@ -59,7 +59,10 @@ data class ExploreResponseDto(
         @SerializedName("categories") val categories: List<Category>,
         @SerializedName("popularityByGeo") val popularityByGeo: Double,
         @SerializedName("venuePage") val venuePage: VenuePage,
-    )
+    ) {
+        val primaryCategory: Category
+            get() = categories.find { it.primary } ?: categories[0]
+    }
 
     data class Category(
         @SerializedName("id") val id: String,
@@ -83,7 +86,7 @@ data class ExploreResponseDto(
     )
 
     data class Location(
-        @SerializedName("address") val address: String,
+        @SerializedName("address") val address: String?,
         @SerializedName("crossStreet") val crossStreet: String?,
         @SerializedName("lat") val lat: Double,
         @SerializedName("lng") val lng: Double,
@@ -170,5 +173,22 @@ data class ExploreQueryDto(
         const val PARAM_LIMIT = "limit"
         const val PARAM_OFFSET = "offset"
     }
+
+    /**
+     * Converts all of this class properties and values into a Map<String,String> in order to pass
+     * to the remote service as query params
+     *
+     * Only for demonstration purpose! , so i only converted these 4 required params below.
+     */
+
+    val propertyMap: Map<String, String?> =
+        mapOf(
+            PARAM_LAT_LANG to coordinates,
+            PARAM_DISTANCE_SORT to sortByDistance.toString(),
+            PARAM_LIMIT to paginationResultCount.toString(),
+            PARAM_OFFSET to paginationOffset.toString()
+        )
 }
+
+
 

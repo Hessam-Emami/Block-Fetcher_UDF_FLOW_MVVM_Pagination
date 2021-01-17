@@ -1,17 +1,20 @@
-package com.emami.blockfetcher.venue.data.local
+package com.emami.blockfetcher.venue.data.local.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.emami.blockfetcher.venue.data.local.dao.RemoteKeysDao
-import com.emami.blockfetcher.venue.data.local.dao.VenueDao
+import androidx.room.TypeConverters
+import com.emami.blockfetcher.venue.data.local.db.converter.InstantConverter
+import com.emami.blockfetcher.venue.data.local.db.dao.RemoteKeysDao
+import com.emami.blockfetcher.venue.data.local.db.dao.VenueDao
 import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
 import com.emami.blockfetcher.venue.data.model.VenueEntity
 
 @Database(entities = [RemoteKeysEntity::class, VenueEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false)
+@TypeConverters(InstantConverter::class)
 abstract class VenueRoomDatabase : RoomDatabase() {
 
     abstract fun remoteKeysDao(): RemoteKeysDao

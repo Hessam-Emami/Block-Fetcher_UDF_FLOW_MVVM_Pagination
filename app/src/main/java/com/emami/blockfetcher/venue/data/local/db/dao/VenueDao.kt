@@ -1,4 +1,4 @@
-package com.emami.blockfetcher.venue.data.local.dao
+package com.emami.blockfetcher.venue.data.local.db.dao
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
