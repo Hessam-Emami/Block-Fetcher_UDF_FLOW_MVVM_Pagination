@@ -1,8 +1,12 @@
 package com.emami.blockfetcher.common.extensions
 
 import com.emami.blockfetcher.common.base.Result
+import com.emami.blockfetcher.common.exception.NoConnectivityException
+import retrofit2.HttpException
 import retrofit2.Response
 import timber.log.Timber
+import java.io.IOException
+import java.net.SocketTimeoutException
 
 internal inline fun <T> invokeApiCall(remoteCall: () -> Response<T>): Result<T> =
     try {
@@ -16,11 +20,16 @@ internal inline fun <T> invokeApiCall(remoteCall: () -> Response<T>): Result<T> 
 
 //Inspired by GithubBrowserSample project
 private fun <T> create(throwable: Throwable): Result<T> {
-    //Throw internally related exceptions for now!
-//    return Result.Error(
-//        throwable.message ?: "Unknown error"
-//    )
-    throw throwable
+    //Gracefully wrap known error and return
+    if (throwable is SocketTimeoutException || throwable is NoConnectivityException || throwable is IOException || throwable is HttpException) {
+        return Result.Error(throwable.message
+            ?: "Unknown error")
+    }
+    //Otherwise, For the exceptions such as MalformedJson or else throw the crash upward!
+    else {
+        Timber.e("Api Call throwable: $throwable")
+        throw throwable
+    }
 }
 
 private fun <T> create(response: Response<T>): Result<T> {
@@ -29,14 +38,14 @@ private fun <T> create(response: Response<T>): Result<T> {
             val body = response.body()
             /*
              * Unchecked cast: Any to T -> We are not going to make Result.Success accept nullable types or create Result.Success.Empty or
-             * Handle EmptyResponse (code 204) for now
+             * Handle EmptyResponse (code 204) ONLY FOR NOW
              */
             Result.Success(
                 body ?: Any() as T
             )
         }
         response.code() == 500 -> Result.Error(
-            response.message()
+            response.message() ?: "Server Unavailable, Try again later."
         )
         else -> {
             val errorMsg = parseErrorMessage(response)

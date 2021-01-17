@@ -2,6 +2,8 @@ package com.emami.blockfetcher.common.di
 
 import com.emami.blockfetcher.BuildConfig
 import com.emami.blockfetcher.common.Constants
+import com.emami.blockfetcher.common.exception.NoConnectivityException
+import com.emami.blockfetcher.common.util.ConnectivityChecker
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import dagger.Module
 import dagger.Provides
@@ -55,11 +57,22 @@ object NetworkModule {
             chain.proceed(newRequest)
         }
 
+    @Provides
+    @Singleton
+    @Named("interceptor_connectivity_checker")
+    //Checks connectivity before the every call shoots onto the network
+    fun provideInternetConnectivityInterceptor(connectivityChecker: ConnectivityChecker): Interceptor =
+        Interceptor {
+            if (!connectivityChecker.isNetworkActive()) throw NoConnectivityException()
+            it.proceed(it.request())
+        }
+
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         @Named("interceptor_logging") loggingInterceptor: Interceptor,
+        @Named("interceptor_connectivity_checker") connectivityInterceptor: Interceptor,
         @Named("interceptor_header_accept") acceptHeaderInterceptor: Interceptor,
         @Named("interceptor_common_query_params") tokenHeaderInterceptor: Interceptor,
     ): OkHttpClient =
@@ -67,6 +80,7 @@ object NetworkModule {
             .addInterceptor(acceptHeaderInterceptor)
             .addInterceptor(tokenHeaderInterceptor)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor(connectivityInterceptor)
             .build()
 
     @Provides
