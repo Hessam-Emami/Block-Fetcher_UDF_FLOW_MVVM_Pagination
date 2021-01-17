@@ -13,14 +13,16 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.emami.blockfetcher.databinding.ExploreFragmentBinding
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.emami.blockfetcher.explore.ui.adapter.VenuePagingAdapter
+import com.emami.blockfetcher.explore.ui.adapter.VenuePagingLoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
@@ -30,8 +32,6 @@ class ExploreFragment : Fragment() {
     //According to the docs, this doesn't need to detach
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    @Inject
-    lateinit var locationProviderClient: FusedLocationProviderClient
 
     private var _binding: ExploreFragmentBinding? = null
     private val binding get() = _binding!!
@@ -43,14 +43,17 @@ class ExploreFragment : Fragment() {
         checkAndRequestLocationPermission()
     }
 
+    lateinit var venuePagingAdapter: VenuePagingAdapter
 
+    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
-        viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
         if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
             onLocationPermissionAvailable()
         }
+        viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
+        viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
+
     }
 
     private fun renderEffect(viewEffect: ExploreViewModel.ExploreViewEffect) {
@@ -62,14 +65,18 @@ class ExploreFragment : Fragment() {
     }
 
     private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
+        venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, viewState.list)
         binding.progressBar.visibility = if (viewState.isLoading) View.VISIBLE else View.GONE
-//        binding.noData.visibility = if (viewState.list) View.VISIBLE else View.GONE
+        binding.noData.visibility =
+            if (venuePagingAdapter.itemCount == 0) View.VISIBLE else View.GONE
     }
 
+    @ExperimentalPagingApi
     private fun onLocationPermissionAvailable() {
-        viewModel.init()
+        viewModel.startVenueDiscovery()
     }
 
+    @ExperimentalPagingApi
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requestPermissionLauncher =
@@ -136,7 +143,16 @@ class ExploreFragment : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = ExploreFragmentBinding.inflate(inflater, container, false)
+        initView()
         return binding.root
+    }
+
+    private fun initView() {
+        venuePagingAdapter = VenuePagingAdapter()
+        binding.pagingRecyclerView.adapter =
+            venuePagingAdapter.withLoadStateFooter(VenuePagingLoadStateAdapter(venuePagingAdapter::retry))
+        binding.pagingRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(),
+            DividerItemDecoration.VERTICAL))
     }
 
     override fun onDestroyView() {
@@ -145,3 +161,4 @@ class ExploreFragment : Fragment() {
     }
 
 }
+

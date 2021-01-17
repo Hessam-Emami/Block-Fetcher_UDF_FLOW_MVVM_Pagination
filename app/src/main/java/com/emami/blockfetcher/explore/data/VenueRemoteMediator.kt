@@ -74,18 +74,18 @@ class VenueRemoteMediator(
     }
 
     private suspend fun insertNewPageData(
-        moviesFromNetwork: List<ExploreResponseDto.VenueDTO>,
+        venueDtos: List<ExploreResponseDto.VenueDTO>,
         endOfPaginationReached: Boolean,
         page: Int,
     ) {
         val nextKey = if (endOfPaginationReached) null else page + Constants.DEFAULT_PAGE_SIZE
-        val keys = moviesFromNetwork.map {
+        val keys = venueDtos.map {
             RemoteKeysEntity(
                 venueId = it.id,
                 nextKey = nextKey
             )
         }
-        localDataSource.insertVenueAndCorrespondingKeys(moviesFromNetwork.map { it.toVenueEntity() },
+        localDataSource.insertVenueAndCorrespondingKeys(venueDtos.map { it.toVenueEntity() },
             keys)
     }
 
@@ -109,8 +109,8 @@ class VenueRemoteMediator(
 
     private suspend fun getRemoteKeyFromCurrentPosition(state: PagingState<Int, VenueEntity>): RemoteKeysEntity? =
         state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.id?.let { movieId ->
-                localDataSource.getRemoteKeyById(movieId)
+            state.closestItemToPosition(position)?.id?.let { venueId ->
+                localDataSource.getRemoteKeyById(venueId)
             }
         }
 

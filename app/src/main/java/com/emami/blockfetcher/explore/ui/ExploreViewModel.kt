@@ -3,16 +3,17 @@ package com.emami.blockfetcher.explore.ui
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.emami.blockfetcher.common.exception.UnknownLastLocationException
 import com.emami.blockfetcher.explore.data.ExploreRepository
 import com.emami.blockfetcher.explore.data.LocationManager
 import com.emami.blockfetcher.explore.data.model.Venue
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ExploreViewModel @ViewModelInject constructor(
     private val locationManager: LocationManager,
@@ -24,16 +25,25 @@ class ExploreViewModel @ViewModelInject constructor(
     val state: StateFlow<ExploreViewState>
         get() = _state
 
+    //SharedFlow with 0 replay acts like SingleLiveEvent. Useful for emitting ViewEffects (one-shot state calls)
     private val _effect = MutableSharedFlow<ExploreViewEffect>(replay = 0)
     val effect: SharedFlow<ExploreViewEffect>
         get() = _effect
 
-    fun init() {
-        viewModelScope.launch {
+    @ExperimentalPagingApi
+    fun startVenueDiscovery() {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.emit(_state.value.copy(isLoading = true))
                 val lastLocation = locationManager.awaitLastLocation()
-                repository.loadData(lastLocation)
+                repository.fetchVenues(lastLocation).cachedIn(viewModelScope)
+                    .catch { cause ->
+                        Timber.e(cause)
+                        _effect.emit(ExploreViewEffect.Error(cause.message ?: "Unknown Error"))
+                    }
+                    .collect {
+                        _state.emit(_state.value.copy(list = it, isLoading = false))
+                    }
             } catch (e: UnknownLastLocationException) {
                 _state.emit(_state.value.copy(isLoading = false))
                 _effect.emit(ExploreViewEffect.Error(e.message ?: "Unknown Error"))

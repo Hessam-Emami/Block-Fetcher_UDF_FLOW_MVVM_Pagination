@@ -20,7 +20,7 @@ class ExploreRepository @Inject constructor(
 ) {
     //Builds corresponding pagination sources
     @ExperimentalPagingApi
-    fun fetchMovies(
+    fun fetchVenues(
         lastLocation: LatitudeLongitude,
     ): Flow<PagingData<Venue>> {
         val localPagingSourceFactory = { localDataSource.getAllVenuesPaged() }
