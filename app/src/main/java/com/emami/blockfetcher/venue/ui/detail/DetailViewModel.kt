@@ -1,30 +1,21 @@
 package com.emami.blockfetcher.venue.ui.detail
 
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.ExperimentalPagingApi
+import com.emami.blockfetcher.common.base.BaseViewModel
 import com.emami.blockfetcher.common.base.Result
 import com.emami.blockfetcher.venue.data.VenueRepository
 import com.emami.blockfetcher.venue.data.model.VenueDetail
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@ExperimentalPagingApi
+
 class DetailViewModel @ViewModelInject constructor(private val repository: VenueRepository) :
-    ViewModel() {
-
-    private val _state = MutableStateFlow(DetailViewState())
-    val state: StateFlow<DetailViewState>
-        get() = _state
-
-    //SharedFlow with 0 replay acts like SingleLiveEvent. Useful for emitting ViewEffects (one-shot state calls)
-    private val _effect = MutableSharedFlow<DetailViewEffect>(replay = 0)
-    val effect: SharedFlow<DetailViewEffect>
-        get() = _effect
-
+    BaseViewModel<DetailViewModel.DetailViewState, DetailViewModel.DetailViewEffect>(DetailViewState()) {
 
     fun getVenueDetails(venueId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,16 +37,15 @@ class DetailViewModel @ViewModelInject constructor(private val repository: Venue
                     }
                 }
         }
-
     }
 
 
     data class DetailViewState(
         val venue: VenueDetail? = null,
         val isLoading: Boolean = false,
-    )
+    ) : BaseViewState
 
-    sealed class DetailViewEffect() {
+    sealed class DetailViewEffect() : BaseViewEffect {
         data class Error(val string: String) : DetailViewEffect()
     }
 }

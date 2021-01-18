@@ -1,6 +1,9 @@
 package com.emami.blockfetcher.venue.data
 
-import androidx.paging.*
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.common.base.Result
 import com.emami.blockfetcher.venue.data.local.CacheIntegrityChecker
@@ -14,7 +17,6 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-@ExperimentalPagingApi
 class VenueRepository @Inject constructor(
     private val remoteSource: VenueRemoteDataSource,
     private val localDataSource: VenueLocalDataSource,

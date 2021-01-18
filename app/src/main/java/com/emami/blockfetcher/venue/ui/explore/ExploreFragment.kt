@@ -10,25 +10,25 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.ExperimentalPagingApi
+import com.emami.blockfetcher.common.base.BaseFragment
+import com.emami.blockfetcher.common.base.BaseViewModel
 import com.emami.blockfetcher.databinding.ExploreFragmentBinding
 import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingAdapter
 import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingLoadStateAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
-@ExperimentalPagingApi
-class ExploreFragment : Fragment() {
+class ExploreFragment :
+    BaseFragment<ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect>() {
 
     private val viewModel: ExploreViewModel by viewModels()
+
+    override val _viewModel: BaseViewModel<ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect>
+        get() = viewModel
 
     //According to the docs, this doesn't need to detach
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -46,19 +46,13 @@ class ExploreFragment : Fragment() {
 
     lateinit var venuePagingAdapter: VenuePagingAdapter
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
-        viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
-    }
-
-    private fun renderEffect(viewEffect: ExploreViewModel.ExploreViewEffect) {
-        when (viewEffect) {
+    override fun renderEffect(effect: ExploreViewModel.ExploreViewEffect) {
+        when (effect) {
             is ExploreViewModel.ExploreViewEffect.Error -> Snackbar.make(requireView(),
-                viewEffect.string,
+                effect.string,
                 Snackbar.LENGTH_SHORT).show()
             is ExploreViewModel.ExploreViewEffect.NavigateToDetails -> openVenueDetailScreen(
-                viewEffect.venueId)
+                effect.venueId)
         }
     }
 
@@ -67,9 +61,9 @@ class ExploreFragment : Fragment() {
             venueId))
     }
 
-    private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
-        venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, viewState.list)
-        binding.progressBar.visibility = if (viewState.isLoading) View.VISIBLE else View.GONE
+    override fun renderState(state: ExploreViewModel.ExploreViewState) {
+        venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, state.list)
+        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
     }
 
     private fun onLocationPermissionAvailable() {
@@ -164,6 +158,7 @@ class ExploreFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 
 }
 

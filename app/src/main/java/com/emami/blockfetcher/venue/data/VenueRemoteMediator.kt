@@ -1,6 +1,5 @@
 package com.emami.blockfetcher.venue.data
 
-import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
@@ -12,7 +11,6 @@ import com.emami.blockfetcher.venue.data.model.*
 import com.emami.blockfetcher.venue.data.network.VenueRemoteDataSource
 import timber.log.Timber
 
-@OptIn(ExperimentalPagingApi::class)
 class VenueRemoteMediator(
     private val query: LatitudeLongitude,
     private val localDataSource: VenueLocalDataSource,
