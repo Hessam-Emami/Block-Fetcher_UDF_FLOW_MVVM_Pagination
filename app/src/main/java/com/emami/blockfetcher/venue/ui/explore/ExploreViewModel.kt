@@ -50,6 +50,12 @@ class ExploreViewModel @ViewModelInject constructor(
         }
     }
 
+    fun onVenueSelected(venue: Venue) {
+        viewModelScope.launch {
+            _effect.emit(ExploreViewEffect.NavigateToDetails(venue.id))
+        }
+    }
+
     data class ExploreViewState(
         val list: PagingData<Venue> = PagingData.empty(),
         val isLoading: Boolean = false,
@@ -57,6 +63,7 @@ class ExploreViewModel @ViewModelInject constructor(
 
     sealed class ExploreViewEffect() {
         data class Error(val string: String) : ExploreViewEffect()
+        data class NavigateToDetails(val venueId: String) : ExploreViewEffect()
     }
 
 }

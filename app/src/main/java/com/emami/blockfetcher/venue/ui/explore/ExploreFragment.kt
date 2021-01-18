@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import com.emami.blockfetcher.databinding.ExploreFragmentBinding
 import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingAdapter
@@ -47,9 +48,6 @@ class ExploreFragment : Fragment() {
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            onLocationPermissionAvailable()
-        }
         viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
         viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
 
@@ -60,7 +58,14 @@ class ExploreFragment : Fragment() {
             is ExploreViewModel.ExploreViewEffect.Error -> Snackbar.make(requireView(),
                 viewEffect.string,
                 Snackbar.LENGTH_SHORT).show()
+            is ExploreViewModel.ExploreViewEffect.NavigateToDetails -> openVenueDetailScreen(
+                viewEffect.venueId)
         }
+    }
+
+    private fun openVenueDetailScreen(venueId: String) {
+        findNavController().navigate(ExploreFragmentDirections.actionExploreFragmentToDetailFragment(
+            venueId))
     }
 
     private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
@@ -76,6 +81,14 @@ class ExploreFragment : Fragment() {
     }
 
     @ExperimentalPagingApi
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            onLocationPermissionAvailable()
+        }
+    }
+
+    @ExperimentalPagingApi
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requestPermissionLauncher =
@@ -88,6 +101,7 @@ class ExploreFragment : Fragment() {
                     onLocationPermissionDenied()
                 }
             }
+
     }
 
     private fun onLocationPermissionDenied() {
@@ -126,6 +140,7 @@ class ExploreFragment : Fragment() {
         }
     }
 
+
     private fun onShowingPermissionRational(permission: String) {
         MaterialAlertDialogBuilder(requireContext()).setCancelable(false)
             .setTitle("Usage of your location")
@@ -147,7 +162,7 @@ class ExploreFragment : Fragment() {
     }
 
     private fun initView() {
-        venuePagingAdapter = VenuePagingAdapter()
+        venuePagingAdapter = VenuePagingAdapter(viewModel::onVenueSelected)
         binding.pagingRecyclerView.adapter =
             venuePagingAdapter.withLoadStateFooter(VenuePagingLoadStateAdapter(venuePagingAdapter::retry))
     }

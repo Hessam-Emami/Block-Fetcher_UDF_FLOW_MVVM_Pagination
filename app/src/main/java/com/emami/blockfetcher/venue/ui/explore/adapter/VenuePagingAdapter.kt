@@ -8,7 +8,7 @@ import com.emami.blockfetcher.databinding.ExploreItemVenueBinding
 import com.emami.blockfetcher.venue.data.model.Venue
 import com.emami.blockfetcher.venue.ui.explore.viewholder.VenueViewHolder
 
-class VenuePagingAdapter() :
+class VenuePagingAdapter(private val onClick: (venue: Venue) -> Unit) :
     PagingDataAdapter<Venue, VenueViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(
@@ -25,7 +25,7 @@ class VenuePagingAdapter() :
 
     override fun onBindViewHolder(holder: VenueViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, onClick)
     }
 
     object DiffCallback : DiffUtil.ItemCallback<Venue>() {

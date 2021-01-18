@@ -9,9 +9,10 @@ import timber.log.Timber
 class VenueViewHolder(private val binding: ExploreItemVenueBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(venue: Venue?) {
+    fun bind(venue: Venue?, onClick: (venue: Venue) -> Unit) {
         if (venue == null) Timber.w("Despite turning off the placeholders, VenueViewHolder received null venue! ")
         venue?.let {
+            binding.root.setOnClickListener { onClick(venue) }
             with(binding) {
                 title.text = it.name
                 categoryName.text = it.tag

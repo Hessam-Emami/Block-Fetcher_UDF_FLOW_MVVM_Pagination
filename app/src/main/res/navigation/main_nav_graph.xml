@@ -9,5 +9,18 @@
         android:id="@+id/exploreFragment"
         android:name="com.emami.blockfetcher.venue.ui.explore.ExploreFragment"
         android:label="Discover Venues"
-        tools:layout="@layout/explore_fragment" />
+        tools:layout="@layout/explore_fragment">
+        <action
+            android:id="@+id/action_exploreFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.emami.blockfetcher.venue.ui.detail.DetailFragment"
+        android:label="Venue's Details"
+        tools:layout="@layout/detail_fragment">
+        <argument
+            android:name="venueId"
+            app:argType="string" />
+    </fragment>
 </navigation>
