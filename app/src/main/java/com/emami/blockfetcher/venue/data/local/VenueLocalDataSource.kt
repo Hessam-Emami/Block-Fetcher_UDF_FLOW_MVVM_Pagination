@@ -7,7 +7,9 @@ import androidx.room.withTransaction
 import com.emami.blockfetcher.venue.data.local.db.VenueRoomDatabase
 import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
+import com.emami.blockfetcher.venue.data.model.VenueDetailEntity
 import com.emami.blockfetcher.venue.data.model.VenueEntity
+import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import javax.inject.Inject
 
@@ -18,6 +20,7 @@ class VenueLocalDataSource @Inject constructor(
 ) {
     private val venueDao = db.venueDao()
     private val remoteKeysDao = db.remoteKeysDao()
+    private val venueDetailDao = db.venueDetailDao()
 
     private suspend fun insertRemoteKeys(remoteKeys: List<RemoteKeysEntity>) {
         remoteKeysDao.insertAll(remoteKeys)
@@ -63,6 +66,13 @@ class VenueLocalDataSource @Inject constructor(
         db.withTransaction {
             venueDao.clearTable()
             remoteKeysDao.clearTable()
+            venueDetailDao.clearTable()
+        }
+    }
+
+    suspend fun invalidateVenueDetails() {
+        db.withTransaction {
+            venueDetailDao.clearTable()
         }
     }
 
@@ -74,6 +84,18 @@ class VenueLocalDataSource @Inject constructor(
             insertVenues(list)
             insertRemoteKeys(keys)
         }
+    }
+
+    fun getVenueDetailById(id: String): Flow<VenueDetailEntity?> {
+        return venueDetailDao.getVenueByIdFlow(id)
+    }
+
+    suspend fun getVenueDetailCreationTime(id: String): Instant? {
+        return db.withTransaction { venueDetailDao.getVenueById(id)?.created_at }
+    }
+
+    suspend fun insertVenueDetail(venueDetailEntity: VenueDetailEntity) {
+        db.withTransaction { venueDetailDao.insert(venueDetailEntity) }
     }
 
     private companion object {

@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@ExperimentalPagingApi
 class ExploreViewModel @ViewModelInject constructor(
     private val locationManager: LocationManager,
     private val repository: VenueRepository,
@@ -30,13 +31,13 @@ class ExploreViewModel @ViewModelInject constructor(
     val effect: SharedFlow<ExploreViewEffect>
         get() = _effect
 
-    @ExperimentalPagingApi
     fun startVenueDiscovery() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.emit(_state.value.copy(isLoading = true))
                 val lastLocation = locationManager.awaitLastLocation()
                 repository.fetchVenues(lastLocation).cachedIn(viewModelScope)
+                    .onStart { _state.emit(_state.value.copy(isLoading = true)) }
                     .catch { cause ->
                         Timber.e(cause)
                     }

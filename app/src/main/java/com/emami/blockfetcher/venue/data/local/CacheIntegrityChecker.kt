@@ -8,7 +8,7 @@ import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 
-class CacheIntergrityCheckerFacade @Inject constructor(private val localDataSource: VenueLocalDataSource) {
+class CacheIntegrityChecker @Inject constructor(private val localDataSource: VenueLocalDataSource) {
 
     suspend fun isDataValidForGivenQuery(location: LatitudeLongitude): Boolean {
         val a = getDataIntegrityByTime()
@@ -18,13 +18,22 @@ class CacheIntergrityCheckerFacade @Inject constructor(private val localDataSour
         return a && b && c
     }
 
+    suspend fun isCurrentVenueDetailValidByTime(id: String): Boolean {
+        val creationTime = localDataSource.getVenueDetailCreationTime(id) ?: return true
+        return isDurationLessThanAllowedDays(creationTime)
+
+    }
+
 
     private suspend fun getDataIntegrityByTime(): Boolean {
         val oldestCachedRecordTime =
             localDataSource.getOldestVenueRecordCreationTime() ?: return true
-        return Duration.between(oldestCachedRecordTime, Instant.now())
-            .toDays() < MAX_CACHE_ALLOWED_DAYS
+        return isDurationLessThanAllowedDays(oldestCachedRecordTime)
     }
+
+    private fun isDurationLessThanAllowedDays(oldestCachedRecordTime: Instant) =
+        Duration.between(oldestCachedRecordTime, Instant.now())
+            .toDays() < MAX_CACHE_ALLOWED_DAYS
 
     private suspend fun getIntegrityByCacheSize(): Boolean {
         return localDataSource.getCachedVenueCount() >= Constants.DEFAULT_PAGE_SIZE

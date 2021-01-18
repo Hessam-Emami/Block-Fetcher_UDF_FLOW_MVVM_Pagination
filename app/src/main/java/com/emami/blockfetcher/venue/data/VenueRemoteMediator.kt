@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.common.base.Result
-import com.emami.blockfetcher.venue.data.local.CacheIntergrityCheckerFacade
+import com.emami.blockfetcher.venue.data.local.CacheIntegrityChecker
 import com.emami.blockfetcher.venue.data.local.VenueLocalDataSource
 import com.emami.blockfetcher.venue.data.model.*
 import com.emami.blockfetcher.venue.data.network.VenueRemoteDataSource
@@ -17,7 +17,7 @@ class VenueRemoteMediator(
     private val query: LatitudeLongitude,
     private val localDataSource: VenueLocalDataSource,
     private val networkService: VenueRemoteDataSource,
-    private val cacheIntergrityCheckerFacade: CacheIntergrityCheckerFacade,
+    private val cacheIntegrityChecker: CacheIntegrityChecker,
 ) : RemoteMediator<Int, VenueEntity>() {
 
 
@@ -32,7 +32,7 @@ class VenueRemoteMediator(
             )
         }
         if (loadType == LoadType.REFRESH) {
-            if (cacheIntergrityCheckerFacade.isDataValidForGivenQuery(query)) {
+            if (cacheIntegrityChecker.isDataValidForGivenQuery(query)) {
                 return MediatorResult.Success(
                     endOfPaginationReached = false
                 )
@@ -49,7 +49,7 @@ class VenueRemoteMediator(
         when (val apiResult =
             networkService.explore(query, page, Constants.DEFAULT_PAGE_SIZE)) {
             is Result.Success -> {
-                val venueDtos: List<ExploreResponseDto.VenueDTO> =
+                val venueDtos: List<Dto.VenueDTO> =
                     apiResult.body.response.groups.toVenueDTOList()
 
                 val endOfPaginationReached = venueDtos.isEmpty()
@@ -76,7 +76,7 @@ class VenueRemoteMediator(
     }
 
     private suspend fun insertNewPageData(
-        venueDtos: List<ExploreResponseDto.VenueDTO>,
+        venueDtos: List<Dto.VenueDTO>,
         endOfPaginationReached: Boolean,
         page: Int,
     ) {

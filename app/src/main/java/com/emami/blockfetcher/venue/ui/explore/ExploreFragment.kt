@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
+@ExperimentalPagingApi
 class ExploreFragment : Fragment() {
 
     private val viewModel: ExploreViewModel by viewModels()
@@ -45,12 +46,10 @@ class ExploreFragment : Fragment() {
 
     lateinit var venuePagingAdapter: VenuePagingAdapter
 
-    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
         viewModel.state.onEach { renderState(it) }.launchIn(viewLifecycleOwner.lifecycleScope)
-
     }
 
     private fun renderEffect(viewEffect: ExploreViewModel.ExploreViewEffect) {
@@ -71,16 +70,12 @@ class ExploreFragment : Fragment() {
     private fun renderState(viewState: ExploreViewModel.ExploreViewState) {
         venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, viewState.list)
         binding.progressBar.visibility = if (viewState.isLoading) View.VISIBLE else View.GONE
-//        binding.noData.visibility =
-//            if (binding.pagingRecyclerView.childCount > 0) View.GONE else View.VISIBLE
     }
 
-    @ExperimentalPagingApi
     private fun onLocationPermissionAvailable() {
         viewModel.startVenueDiscovery()
     }
 
-    @ExperimentalPagingApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -88,7 +83,6 @@ class ExploreFragment : Fragment() {
         }
     }
 
-    @ExperimentalPagingApi
     override fun onAttach(context: Context) {
         super.onAttach(context)
         requestPermissionLauncher =
@@ -101,7 +95,6 @@ class ExploreFragment : Fragment() {
                     onLocationPermissionDenied()
                 }
             }
-
     }
 
     private fun onLocationPermissionDenied() {

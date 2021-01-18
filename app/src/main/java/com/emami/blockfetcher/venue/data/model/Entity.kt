@@ -42,4 +42,30 @@ data class LocationEntity(
     val distance: Int,
 )
 
+@Entity(tableName = "venue_detail")
+data class VenueDetailEntity @JvmOverloads constructor(
+    @PrimaryKey @ColumnInfo(name = "venue_id")
+    val id: String,
+    val name: String,
+    val description: String,
+    val url: String?,
+    //Ultimately We would setup a one-to-many relationship between venue-detail and phrases,
+    //but not for now,
+    val samplePhrase: String?,
+    @Embedded
+    val venueMainIcon: IconEntity?,
+    @Embedded
+    val rating: RatingEntity,
+    @Embedded
+    val primaryCategory: CategoryEntity,
+    @Embedded
+    val location: LocationEntity,
+    @Embedded
+    val status: OpenStatusEntity?,
+    val numberOfVenueDetailUpdates: Int?,
+    val created_at: Instant = Instant.now(),
+)
 
+data class IconEntity(val prefix: String, val suffix: String, val width: Int?, val height: Int?)
+data class OpenStatusEntity(val status: String?, val isOpen: Boolean?)
+data class RatingEntity(val rating: Double, val ratingColor: String, val ratingCount: Int)

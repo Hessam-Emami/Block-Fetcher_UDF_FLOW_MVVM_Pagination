@@ -49,3 +49,6 @@ data class LatitudeLongitude(val lat: Double, val lng: Double) {
             append(lng)
         }
 }
+
+
+data class VenueDetail(val name: String)

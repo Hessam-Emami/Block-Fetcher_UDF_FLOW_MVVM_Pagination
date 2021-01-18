@@ -2,26 +2,25 @@ package com.emami.blockfetcher.venue.data
 
 import androidx.paging.*
 import com.emami.blockfetcher.common.Constants
-import com.emami.blockfetcher.venue.data.local.CacheIntergrityCheckerFacade
+import com.emami.blockfetcher.common.base.Result
+import com.emami.blockfetcher.venue.data.local.CacheIntegrityChecker
 import com.emami.blockfetcher.venue.data.local.VenueLocalDataSource
-import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
-import com.emami.blockfetcher.venue.data.model.Venue
-import com.emami.blockfetcher.venue.data.model.VenueEntity
-import com.emami.blockfetcher.venue.data.model.toDomain
+import com.emami.blockfetcher.venue.data.model.*
 import com.emami.blockfetcher.venue.data.network.VenueRemoteDataSource
 import dagger.hilt.android.scopes.ActivityRetainedScoped
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @ActivityRetainedScoped
+@ExperimentalPagingApi
 class VenueRepository @Inject constructor(
     private val remoteSource: VenueRemoteDataSource,
     private val localDataSource: VenueLocalDataSource,
-    private val cacheIntergrityCheckerFacade: CacheIntergrityCheckerFacade,
+    private val cacheIntegrityChecker: CacheIntegrityChecker,
 ) {
     //Builds corresponding pagination sources
-    @ExperimentalPagingApi
     fun fetchVenues(
         lastLocation: LatitudeLongitude,
     ): Flow<PagingData<Venue>> {
@@ -30,7 +29,7 @@ class VenueRepository @Inject constructor(
             VenueRemoteMediator(lastLocation,
                 localDataSource,
                 remoteSource,
-                cacheIntergrityCheckerFacade)
+                cacheIntegrityChecker)
         return Pager(
             PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE,
                 initialLoadSize = Constants.DEFAULT_PAGE_SIZE,
@@ -40,5 +39,36 @@ class VenueRepository @Inject constructor(
             remoteMediator = remotePagingSourceMediator
         ).flow.map { value: PagingData<VenueEntity> -> value.map { it.toDomain() } }
     }
+
+    suspend fun getVenueDetailById(id: String): Flow<Result<VenueDetail?>> = flow {
+        if (id.isEmpty()) throw IllegalArgumentException("VenueDetail Id cannot be null or empty!")
+        localDataSource.getVenueDetailById(id)
+            .flowOn(Dispatchers.IO)
+            .catch { Timber.e(it) }
+            .collect {
+                if (it == null) {
+                    fetchFromRemoteAndSave(id)
+                } else {
+                    if (cacheIntegrityChecker.isCurrentVenueDetailValidByTime(id)) {
+                        emit(Result.Success<VenueDetail?>(it.toVenueDetail()))
+                    } else {
+                        fetchFromRemoteAndSave(id)
+                    }
+                }
+            }
+    }
+
+    private suspend fun FlowCollector<Result<VenueDetail?>>.fetchFromRemoteAndSave(
+        id: String,
+    ) {
+        when (val remoteResult = remoteSource.getVenueById(id)) {
+            is Result.Success -> localDataSource.insertVenueDetail(remoteResult.body.response.venue.toVenueDetailEntity())
+            is Result.Error -> {
+                emit(Result.Error(remoteResult.errorMessage))
+            }
+        }
+    }
 }
+
+
 
