@@ -7,8 +7,8 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.emami.blockfetcher.common.exception.UnknownLastLocationException
-import com.emami.blockfetcher.venue.data.ExploreRepository
 import com.emami.blockfetcher.venue.data.LocationManager
+import com.emami.blockfetcher.venue.data.VenueRepository
 import com.emami.blockfetcher.venue.data.model.Venue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -17,7 +17,7 @@ import timber.log.Timber
 
 class ExploreViewModel @ViewModelInject constructor(
     private val locationManager: LocationManager,
-    private val repository: ExploreRepository,
+    private val repository: VenueRepository,
 ) :
     ViewModel() {
 
@@ -39,7 +39,6 @@ class ExploreViewModel @ViewModelInject constructor(
                 repository.fetchVenues(lastLocation).cachedIn(viewModelScope)
                     .catch { cause ->
                         Timber.e(cause)
-                        _effect.emit(ExploreViewEffect.Error(cause.message ?: "Unknown Error"))
                     }
                     .collect {
                         _state.emit(_state.value.copy(list = it, isLoading = false))

@@ -9,7 +9,7 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-class RemoteDataSource @Inject constructor(private val venueService: VenueService) {
+class VenueRemoteDataSource @Inject constructor(private val venueService: VenueService) {
     companion object {
         private const val QUERY_FLAG_TRUE = 1
     }

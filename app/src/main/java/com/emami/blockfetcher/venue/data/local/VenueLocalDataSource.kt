@@ -1,14 +1,21 @@
 package com.emami.blockfetcher.venue.data.local
 
+import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
-import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.venue.data.local.db.VenueRoomDatabase
+import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
 import com.emami.blockfetcher.venue.data.model.VenueEntity
+import java.time.Instant
 import javax.inject.Inject
 
-class LocalDataSource @Inject constructor(private val db: VenueRoomDatabase) {
+
+class VenueLocalDataSource @Inject constructor(
+    private val db: VenueRoomDatabase,
+    private val sharedPref: SharedPreferences,
+) {
     private val venueDao = db.venueDao()
     private val remoteKeysDao = db.remoteKeysDao()
 
@@ -18,6 +25,20 @@ class LocalDataSource @Inject constructor(private val db: VenueRoomDatabase) {
 
     private suspend fun insertVenues(venues: List<VenueEntity>) {
         venueDao.insertAll(venues)
+    }
+
+    fun getLastKnownLocation(): LatitudeLongitude? {
+        val lat = sharedPref.getString(PREF_LAT_KEY, null)
+        val lng = sharedPref.getString(PREF_LNG_KEY, null)
+        return if (lat != null && lng != null) LatitudeLongitude(lat.toDouble(), lng.toDouble())
+        else null
+    }
+
+    fun saveLastKnownLocation(location: LatitudeLongitude) {
+        sharedPref.edit {
+            putString(PREF_LAT_KEY, location.lat.toString())
+            putString(PREF_LNG_KEY, location.lng.toString())
+        }
     }
 
     suspend fun getRemoteKeyById(venueId: String): RemoteKeysEntity? {
@@ -32,9 +53,11 @@ class LocalDataSource @Inject constructor(private val db: VenueRoomDatabase) {
         return db.withTransaction { venueDao.getAllVenues() }
     }
 
-    suspend fun isDataValid(): Boolean {
-        return getAllVenues().size > Constants.DEFAULT_PAGE_SIZE
+    suspend fun getOldestVenueRecordCreationTime(): Instant? {
+        return db.withTransaction { venueDao.getOldestRecord() }
     }
+
+    suspend fun getCachedVenueCount(): Int = getAllVenues().size
 
     suspend fun invalidateData() {
         db.withTransaction {
@@ -51,6 +74,11 @@ class LocalDataSource @Inject constructor(private val db: VenueRoomDatabase) {
             insertVenues(list)
             insertRemoteKeys(keys)
         }
+    }
+
+    private companion object {
+        const val PREF_LAT_KEY = "pref-lat-key"
+        const val PREF_LNG_KEY = "pref-lng-key"
     }
 }
 

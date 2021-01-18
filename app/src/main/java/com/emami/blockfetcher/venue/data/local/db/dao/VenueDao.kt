@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.emami.blockfetcher.venue.data.model.VenueEntity
+import java.time.Instant
 
 @Dao
 interface VenueDao {
@@ -20,4 +21,7 @@ interface VenueDao {
 
     @Query("SELECT * FROM venue")
     fun getAllVenues(): List<VenueEntity>
+
+    @Query("SELECT MIN(created_at) FROM venue")
+    fun getOldestRecord(): Instant?
 }

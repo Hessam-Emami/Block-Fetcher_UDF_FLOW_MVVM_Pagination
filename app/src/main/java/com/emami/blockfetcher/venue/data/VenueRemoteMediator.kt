@@ -6,16 +6,18 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.common.base.Result
-import com.emami.blockfetcher.venue.data.local.LocalDataSource
+import com.emami.blockfetcher.venue.data.local.CacheDataIntegrityFacade
+import com.emami.blockfetcher.venue.data.local.VenueLocalDataSource
 import com.emami.blockfetcher.venue.data.model.*
-import com.emami.blockfetcher.venue.data.network.RemoteDataSource
+import com.emami.blockfetcher.venue.data.network.VenueRemoteDataSource
 import timber.log.Timber
 
 @OptIn(ExperimentalPagingApi::class)
 class VenueRemoteMediator(
     private val query: LatitudeLongitude,
-    private val localDataSource: LocalDataSource,
-    private val networkService: RemoteDataSource,
+    private val localDataSource: VenueLocalDataSource,
+    private val networkService: VenueRemoteDataSource,
+    private val cacheDataIntegrityFacade: CacheDataIntegrityFacade,
 ) : RemoteMediator<Int, VenueEntity>() {
 
 
@@ -29,10 +31,12 @@ class VenueRemoteMediator(
                 endOfPaginationReached = true
             )
         }
-        if (loadType == LoadType.REFRESH && localDataSource.isDataValid()) {
-            return MediatorResult.Success(
-                endOfPaginationReached = false
-            )
+        if (loadType == LoadType.REFRESH) {
+            if (cacheDataIntegrityFacade.isDataValidForGivenQuery(query)) {
+                return MediatorResult.Success(
+                    endOfPaginationReached = false
+                )
+            }
         }
         var page = computePageNumber(loadType, state)
         if (loadType == LoadType.APPEND && page == null) {
@@ -41,6 +45,7 @@ class VenueRemoteMediator(
             )
         }
         page = page ?: Constants.DEFAULT_PAGE_SIZE
+        localDataSource.saveLastKnownLocation(query)
         when (val apiResult =
             networkService.explore(query, page, Constants.DEFAULT_PAGE_SIZE)) {
             is Result.Success -> {

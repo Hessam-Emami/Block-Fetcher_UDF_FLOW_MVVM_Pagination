@@ -5,7 +5,7 @@ import com.emami.blockfetcher.databinding.ExploreItemVenueBinding
 import com.emami.blockfetcher.venue.data.model.Venue
 import timber.log.Timber
 
-class VenueViewHolder(val binding: ExploreItemVenueBinding) :
+class VenueViewHolder(private val binding: ExploreItemVenueBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(venue: Venue?) {
