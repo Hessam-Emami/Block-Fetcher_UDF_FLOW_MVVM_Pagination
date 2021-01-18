@@ -21,19 +21,35 @@ data class Venue(
     val tag: String
         get() = primaryCategory.name
 
-    fun iconPath(@Px size: Int) = primaryCategory.icon(size)
+    fun iconPath(@Px size: Int) = primaryCategory.getIconPath(size)
 }
 
-data class Category(
-    val name: String,
-    private val iconPrefix: String,
-    private val iconPostFix: String,
+data class Icon(
+    private val iconPrefix: String?,
+    private val iconPostFix: String?,
+    val height: Int?,
+    val width: Int?,
 ) {
-    fun icon(@Px widthHeight: Int) = buildString {
+    fun getIconPathBySize(@Px widthHeight: Int) = buildString {
         append(iconPrefix)
         append(widthHeight)
         append(iconPostFix)
     }
+
+    fun getIconPathByWidthHeight(@Px width: Int, @Px height: Int) = buildString {
+        append(iconPrefix)
+        append(width)
+        append("x")
+        append(height)
+        append(iconPostFix)
+    }
+}
+
+data class Category(
+    val name: String,
+    private val icon: Icon,
+) {
+    fun getIconPath(@Px size: Int): String = icon.getIconPathBySize(size)
 }
 
 data class Location(
@@ -51,4 +67,18 @@ data class LatitudeLongitude(val lat: Double, val lng: Double) {
 }
 
 
-data class VenueDetail(val name: String)
+data class VenueDetail constructor(
+    val id: String,
+    val name: String,
+    val description: String,
+    val url: String?,
+    val likesCount: Int?,
+    val venueMainIcon: Icon?,
+    val phoneNumber: String?,
+    val rating: Rating,
+    val primaryCategory: Category,
+    val location: Location,
+    val status: String?,
+)
+
+data class Rating(val rating: Double, val ratingColor: String, val ratingCount: Int)

@@ -14,7 +14,7 @@ import com.emami.blockfetcher.venue.data.model.VenueDetailEntity
 import com.emami.blockfetcher.venue.data.model.VenueEntity
 
 @Database(entities = [RemoteKeysEntity::class, VenueEntity::class, VenueDetailEntity::class],
-    version = 2,
+    version = 4,
     exportSchema = false)
 @TypeConverters(InstantConverter::class)
 abstract class VenueRoomDatabase : RoomDatabase() {

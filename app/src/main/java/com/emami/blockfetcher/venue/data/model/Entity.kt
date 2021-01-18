@@ -26,21 +26,6 @@ data class VenueEntity(
     val created_at: Instant = Instant.now(),
 )
 
-data class CategoryEntity(
-    @ColumnInfo(name = "category_id")
-    val id: String,
-    @ColumnInfo(name = "category_name")
-    val name: String,
-    val iconPrefix: String,
-    val iconPostFix: String,
-)
-
-data class LocationEntity(
-    val lat: Double,
-    val lng: Double,
-    val address: String,
-    val distance: Int,
-)
 
 @Entity(tableName = "venue_detail")
 data class VenueDetailEntity @JvmOverloads constructor(
@@ -49,9 +34,9 @@ data class VenueDetailEntity @JvmOverloads constructor(
     val name: String,
     val description: String,
     val url: String?,
-    //Ultimately We would setup a one-to-many relationship between venue-detail and phrases,
-    //but not for now,
     val samplePhrase: String?,
+    val phoneNumber: String?,
+    val likesCount: Int?,
     @Embedded
     val venueMainIcon: IconEntity?,
     @Embedded
@@ -69,3 +54,18 @@ data class VenueDetailEntity @JvmOverloads constructor(
 data class IconEntity(val prefix: String, val suffix: String, val width: Int?, val height: Int?)
 data class OpenStatusEntity(val status: String?, val isOpen: Boolean?)
 data class RatingEntity(val rating: Double, val ratingColor: String, val ratingCount: Int)
+data class CategoryEntity(
+    @ColumnInfo(name = "category_id")
+    val id: String,
+    @ColumnInfo(name = "category_name")
+    val name: String,
+    val iconPrefix: String,
+    val iconPostFix: String,
+)
+
+data class LocationEntity(
+    val lat: Double,
+    val lng: Double,
+    val address: String,
+    val distance: Int,
+)

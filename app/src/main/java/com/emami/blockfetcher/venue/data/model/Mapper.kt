@@ -17,9 +17,10 @@ fun VenueEntity.toDomain() =
         location = Location(LatitudeLongitude(location.lat, location.lng),
             location.address,
             location.distance),
-        primaryCategory = Category(primaryCategory.name,
-            primaryCategory.iconPrefix,
-            primaryCategory.iconPostFix),
+        primaryCategory = Category(
+            primaryCategory.name,
+            Icon(primaryCategory.iconPrefix, primaryCategory.iconPostFix, null, null),
+        ),
         name = name)
 
 fun List<Dto.Group>.toVenueDTOList(): List<Dto.VenueDTO> =
@@ -39,6 +40,7 @@ fun Dto.VenueDetail.toVenueDetailEntity(): VenueDetailEntity = VenueDetailEntity
         this.bestPhoto.width,
         this.bestPhoto.height) else null,
     rating = RatingEntity(this.rating, this.ratingColor, this.ratingSignals),
+    likesCount = this.likes.count,
     primaryCategory = CategoryEntity(primaryCategory.id,
         primaryCategory.name,
         primaryCategory.icon.prefix,
@@ -48,7 +50,25 @@ fun Dto.VenueDetail.toVenueDetailEntity(): VenueDetailEntity = VenueDetailEntity
         location.address ?: "No Address Associated.",
         location.distance),
     status = OpenStatusEntity(this.hours?.status, this.hours?.isOpen),
-    numberOfVenueDetailUpdates = this.pageUpdates?.count
+    numberOfVenueDetailUpdates = this.pageUpdates?.count,
+    phoneNumber = this.contact?.phone
 )
 
-fun VenueDetailEntity.toVenueDetail() = VenueDetail(this.name)
+fun VenueDetailEntity.toVenueDetail() = VenueDetail(
+    id = this.id,
+    name = this.name,
+    description = description,
+    url = url,
+    likesCount = likesCount,
+    venueMainIcon = Icon(this.venueMainIcon?.prefix,
+        this.venueMainIcon?.suffix,
+        this.venueMainIcon?.height,
+        this.venueMainIcon?.width),
+    rating = Rating(rating.rating, rating.ratingColor, rating.ratingCount),
+    primaryCategory = Category(this.primaryCategory.name,
+        Icon(primaryCategory.iconPrefix, primaryCategory.iconPostFix, null, null)),
+    location = Location(
+        LatitudeLongitude(location.lat, location.lng), location.address, location.distance),
+    status = status?.status,
+    phoneNumber = this.phoneNumber
+)

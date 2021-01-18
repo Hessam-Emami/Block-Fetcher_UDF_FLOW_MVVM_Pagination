@@ -7,11 +7,11 @@ import com.emami.blockfetcher.R
 import com.google.android.material.color.MaterialColors
 
 
-fun ImageView.src(iconPath: String?) {
+fun ImageView.loadFromPath(iconPath: String?) {
     val circularProgressDrawable = CircularProgressDrawable(context).apply {
         strokeWidth = 8f
         centerRadius = 30f
-        setColorSchemeColors(MaterialColors.getColor(this@src, R.attr.colorOnPrimary))
+        setColorSchemeColors(MaterialColors.getColor(this@loadFromPath, R.attr.colorOnPrimary))
         start()
     }
     Glide.with(this).load(iconPath).placeholder(circularProgressDrawable).into(this)

@@ -2,4 +2,8 @@
     <string name="app_name">Block Fetcher</string>
     <string name="retry">Retry</string>
     <string name="no_data">No data available to be shown</string>
+    <string name="try_again">We have encountered an error. do you want to try again?</string>
+    <string name="website">Website</string>
+    <string name="phone">Phone</string>
+    <string name="location">Location</string>
 </resources>

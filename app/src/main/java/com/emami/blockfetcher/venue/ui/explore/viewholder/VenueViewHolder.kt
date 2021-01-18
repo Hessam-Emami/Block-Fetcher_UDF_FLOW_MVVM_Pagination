@@ -1,7 +1,7 @@
 package com.emami.blockfetcher.venue.ui.explore.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
-import com.emami.blockfetcher.common.extensions.src
+import com.emami.blockfetcher.common.extensions.loadFromPath
 import com.emami.blockfetcher.databinding.ExploreItemVenueBinding
 import com.emami.blockfetcher.venue.data.model.Venue
 import timber.log.Timber
@@ -18,7 +18,7 @@ class VenueViewHolder(private val binding: ExploreItemVenueBinding) :
                 categoryName.text = it.tag
                 distance.text = it.labeledDistanceInKilometers
                 address.text = it.address
-                icon.src(it.iconPath(100))
+                icon.loadFromPath(it.iconPath(100))
             }
         }
     }
