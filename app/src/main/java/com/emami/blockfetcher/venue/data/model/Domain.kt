@@ -4,8 +4,8 @@ import androidx.annotation.Px
 
 data class Venue(
     val id: String,
-    val location: Location,
-    val primaryCategory: Category,
+    private val location: Location,
+    private val primaryCategory: Category,
     val name: String,
 ) {
     val labeledDistanceInKilometers: String
@@ -20,6 +20,8 @@ data class Venue(
         get() = location.address
     val tag: String
         get() = primaryCategory.name
+
+    fun iconPath(@Px size: Int) = primaryCategory.icon(size)
 }
 
 data class Category(
@@ -28,7 +30,7 @@ data class Category(
     private val iconPostFix: String,
 ) {
     fun icon(@Px widthHeight: Int) = buildString {
-        append(iconPostFix)
+        append(iconPrefix)
         append(widthHeight)
         append(iconPostFix)
     }
