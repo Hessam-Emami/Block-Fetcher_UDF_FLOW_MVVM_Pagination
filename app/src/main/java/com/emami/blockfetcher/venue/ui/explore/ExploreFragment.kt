@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.emami.blockfetcher.databinding.ExploreFragmentBinding
 import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingAdapter
 import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingLoadStateAdapter
@@ -151,8 +150,6 @@ class ExploreFragment : Fragment() {
         venuePagingAdapter = VenuePagingAdapter()
         binding.pagingRecyclerView.adapter =
             venuePagingAdapter.withLoadStateFooter(VenuePagingLoadStateAdapter(venuePagingAdapter::retry))
-        binding.pagingRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(),
-            DividerItemDecoration.VERTICAL))
     }
 
     override fun onDestroyView() {

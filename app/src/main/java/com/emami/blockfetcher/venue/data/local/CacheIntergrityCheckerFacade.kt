@@ -8,7 +8,7 @@ import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 
-class CacheDataIntegrityFacade @Inject constructor(private val localDataSource: VenueLocalDataSource) {
+class CacheIntergrityCheckerFacade @Inject constructor(private val localDataSource: VenueLocalDataSource) {
 
     suspend fun isDataValidForGivenQuery(location: LatitudeLongitude): Boolean {
         val a = getDataIntegrityByTime()

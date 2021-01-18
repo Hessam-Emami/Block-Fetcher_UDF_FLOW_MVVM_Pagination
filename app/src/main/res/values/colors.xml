@@ -2,6 +2,7 @@
 <resources>
 
     <color name="windows_blue">#3f88c5</color>
+    <color name="blue_material_700">#26567E</color>
     <color name="white">#ffffff</color>
     <color name="dodger_blue_22">#3842bffa</color>
     <color name="black_two">#000000</color>

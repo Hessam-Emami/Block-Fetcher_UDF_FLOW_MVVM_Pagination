@@ -9,7 +9,7 @@ fun ExploreResponseDto.VenueDTO.toVenueEntity() = VenueEntity(id = id,
         primaryCategory.icon.suffix),
     location = LocationEntity(location.lat,
         location.lng,
-        location.address ?: "No Address Available.",
+        location.address ?: "No Address Associated.",
         location.distance))
 
 

@@ -8,8 +8,18 @@ data class Venue(
     val primaryCategory: Category,
     val name: String,
 ) {
-    val labeledDistance: String
-        get() = "${location.distance} m"
+    val labeledDistanceInKilometers: String
+        get() = buildString {
+            val distanceInKilo = location.distance.toDouble() / 1000
+            val formattedDistance = String.format("%.2f", distanceInKilo)
+            append(formattedDistance)
+            append("km")
+        }
+
+    val address: String
+        get() = location.address
+    val tag: String
+        get() = primaryCategory.name
 }
 
 data class Category(

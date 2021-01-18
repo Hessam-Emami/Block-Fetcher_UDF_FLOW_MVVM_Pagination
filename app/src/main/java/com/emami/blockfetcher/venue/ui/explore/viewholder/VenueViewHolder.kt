@@ -9,9 +9,14 @@ class VenueViewHolder(private val binding: ExploreItemVenueBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     fun bind(venue: Venue?) {
-        if (venue == null) Timber.w("We're having NULL venue despite turning off the placeholders!")
+        if (venue == null) Timber.w("Despite turning off the placeholders, VenueViewHolder received null venue! ")
         venue?.let {
-            binding.title.text = venue.name
+            with(binding) {
+                title.text = venue.name
+                categoryName.text = venue.tag
+                distance.text = venue.labeledDistanceInKilometers
+                address.text = venue.address
+            }
         }
     }
 }

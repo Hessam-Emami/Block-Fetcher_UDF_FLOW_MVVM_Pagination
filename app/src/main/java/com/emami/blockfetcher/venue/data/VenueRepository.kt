@@ -2,7 +2,7 @@ package com.emami.blockfetcher.venue.data
 
 import androidx.paging.*
 import com.emami.blockfetcher.common.Constants
-import com.emami.blockfetcher.venue.data.local.CacheDataIntegrityFacade
+import com.emami.blockfetcher.venue.data.local.CacheIntergrityCheckerFacade
 import com.emami.blockfetcher.venue.data.local.VenueLocalDataSource
 import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import com.emami.blockfetcher.venue.data.model.Venue
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class VenueRepository @Inject constructor(
     private val remoteSource: VenueRemoteDataSource,
     private val localDataSource: VenueLocalDataSource,
-    private val cacheDataIntegrityFacade: CacheDataIntegrityFacade,
+    private val cacheIntergrityCheckerFacade: CacheIntergrityCheckerFacade,
 ) {
     //Builds corresponding pagination sources
     @ExperimentalPagingApi
@@ -30,7 +30,7 @@ class VenueRepository @Inject constructor(
             VenueRemoteMediator(lastLocation,
                 localDataSource,
                 remoteSource,
-                cacheDataIntegrityFacade)
+                cacheIntergrityCheckerFacade)
         return Pager(
             PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE,
                 initialLoadSize = Constants.DEFAULT_PAGE_SIZE,

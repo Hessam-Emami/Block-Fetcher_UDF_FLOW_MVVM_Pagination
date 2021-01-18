@@ -6,7 +6,7 @@
     <style name="Theme.BlockFetcher" parent="Theme.Base.BlockFetcher">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/windows_blue</item>
-        <item name="colorPrimaryVariant">@color/windows_blue</item>
+        <item name="colorPrimaryVariant">@color/blue_material_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/dodger_blue_22</item>

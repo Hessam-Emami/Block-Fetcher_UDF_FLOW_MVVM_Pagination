@@ -6,7 +6,7 @@ import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import com.emami.blockfetcher.common.Constants
 import com.emami.blockfetcher.common.base.Result
-import com.emami.blockfetcher.venue.data.local.CacheDataIntegrityFacade
+import com.emami.blockfetcher.venue.data.local.CacheIntergrityCheckerFacade
 import com.emami.blockfetcher.venue.data.local.VenueLocalDataSource
 import com.emami.blockfetcher.venue.data.model.*
 import com.emami.blockfetcher.venue.data.network.VenueRemoteDataSource
@@ -17,7 +17,7 @@ class VenueRemoteMediator(
     private val query: LatitudeLongitude,
     private val localDataSource: VenueLocalDataSource,
     private val networkService: VenueRemoteDataSource,
-    private val cacheDataIntegrityFacade: CacheDataIntegrityFacade,
+    private val cacheIntergrityCheckerFacade: CacheIntergrityCheckerFacade,
 ) : RemoteMediator<Int, VenueEntity>() {
 
 
@@ -32,7 +32,7 @@ class VenueRemoteMediator(
             )
         }
         if (loadType == LoadType.REFRESH) {
-            if (cacheDataIntegrityFacade.isDataValidForGivenQuery(query)) {
+            if (cacheIntergrityCheckerFacade.isDataValidForGivenQuery(query)) {
                 return MediatorResult.Success(
                     endOfPaginationReached = false
                 )
