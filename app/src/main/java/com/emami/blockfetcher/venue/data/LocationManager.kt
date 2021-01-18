@@ -37,7 +37,8 @@ class LocationManager @Inject constructor(
             // Add listeners that will resume the execution of this coroutine
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 // Resume coroutine and return location
-                continuation.resume(LatitudeLongitude(location.latitude, location.longitude))
+                if (location == null) continuation.resumeWithException(UnknownLastLocationException())
+                else continuation.resume(LatitudeLongitude(location.latitude, location.longitude))
             }.addOnFailureListener { e ->
                 // Resume the coroutine by throwing an exception
                 //Log actual exception to Crashlytics but return custom exception instead!
