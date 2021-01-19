@@ -6,6 +6,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "io.gitlab.arturbosch.detekt"
     id 'kotlin-parcelize'
+    id 'jacoco'
 }
 
 android {
@@ -50,6 +51,15 @@ android {
         exclude "DebugProbesKt.bin"
     }
 
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            jacoco {
+                includeNoLocationClasses = true
+            }
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }
@@ -68,6 +78,7 @@ dependencies {
     implementation libraries.activityKtx
     implementation libraries.playServicesLocation
 
+
     implementation libraries.retrofit
     implementation libraries.moshiConverterFactory
     implementation libraries.loggingInterceptor
@@ -79,6 +90,7 @@ dependencies {
     implementation libraries.coroutineAndroid
     implementation libraries.coroutineCallAdapter
     implementation libraries.gson
+    implementation libraries.gsonConverterFactory
 
     coreLibraryDesugaring libraries.jdkDesugar
 
@@ -114,14 +126,27 @@ dependencies {
 
     androidTestImplementation testLibraries.androidXextJunit
     androidTestImplementation testLibraries.espresso_core
+    androidTestImplementation testLibraries.mockWebServer
     debugImplementation(testLibraries.fragmentTesting) {
         exclude group: 'androidx.test', module: 'monitor'
     }
+    androidTestImplementation testLibraries.coroutineTest
+
     androidTestImplementation testLibraries.navTesting
     androidTestImplementation testLibraries.mockito
-    androidTestImplementation testLibraries.mockitoDexMaker
     implementation testLibraries.idlingResource
 
+    // For instrumented tests.
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.28-alpha'
+    // ...with Kotlin.
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.30.1-alpha'
+    androidTestImplementation 'androidx.test:runner:1.3.0'
+    androidTestUtil 'androidx.test:orchestrator:1.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+
+// AndroidJUnitRunner and JUnit Rules
+    implementation 'androidx.test:runner:1.3.0'
+    implementation 'androidx.test:rules:1.3.0'
     detektPlugins buildPlugins.detektFormatting
 
 
@@ -132,9 +157,6 @@ detekt {
     failFast = true // fail build on any finding
     buildUponDefaultConfig = true // preconfigure defaults
     config = files("$projectDir/config/detekt.yml")
-    // point to your custom config defining rules to run, overwriting default behavior
-    baseline = file("$projectDir/config/baseline.xml")
-    // a way of suppressing issues before introducing detekt
 
     reports {
         html.enabled = true // observe findings in your browser with structure and code snippets
@@ -144,3 +166,31 @@ detekt {
     }
 }
 tasks.detekt.jvmTarget = "1.8"
+
+//Jacoco  ###################################################################################################################
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/*$ViewInjector*.*',
+                      '**/Manifest*.*',
+                      '**/*Test*.*',
+                      'android/**/*.*',
+                      '**/data/models/*']
+    def debugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
+            "jacoco/testDebugUnitTest.exec",
+            "outputs/code-coverage/connected/*coverage.ec"
+    ]))
+
+}
