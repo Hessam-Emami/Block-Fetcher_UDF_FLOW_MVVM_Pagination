@@ -53,7 +53,7 @@ data class VenueDetailEntity @JvmOverloads constructor(
 
 data class IconEntity(val prefix: String, val suffix: String, val width: Int?, val height: Int?)
 data class OpenStatusEntity(val status: String?, val isOpen: Boolean?)
-data class RatingEntity(val rating: Double, val ratingColor: String, val ratingCount: Int)
+data class RatingEntity(val rating: String, val ratingColor: String, val ratingCount: Int)
 data class CategoryEntity(
     @ColumnInfo(name = "category_id")
     val id: String,

@@ -65,7 +65,7 @@ class Dto {
         @SerializedName("venuePage") val venuePage: VenuePage,
     ) {
         val primaryCategory: Category
-            get() = categories.find { it.primary } ?: categories[0]
+            get() = findPrimaryCategory(categories)
     }
 
     data class Category(
@@ -201,6 +201,7 @@ class Dto {
         val venue: VenueDetail,
     )
 
+
     data class VenueDetail(
         @SerializedName("id")
         val id: String,
@@ -219,11 +220,11 @@ class Dto {
         @SerializedName("likes")
         val likes: Likes,
         @SerializedName("rating")
-        val rating: Double,
+        val rating: Double?,
         @SerializedName("ratingColor")
-        val ratingColor: String,
+        val ratingColor: String?,
         @SerializedName("ratingSignals")
-        val ratingSignals: Int,
+        val ratingSignals: Int?,
         @SerializedName("description")
         val description: String?,
         @SerializedName("phrases")
@@ -236,7 +237,7 @@ class Dto {
         val bestPhoto: Icon?,
     ) {
         val primaryCategory: Category
-            get() = categories.find { it.primary } ?: categories[0]
+            get() = findPrimaryCategory(categories)
     }
 
     data class Contact(
@@ -297,3 +298,5 @@ class Dto {
 
     //endregion
 }
+
+private fun findPrimaryCategory(list: List<Dto.Category>) = list.find { it.primary } ?: list[0]

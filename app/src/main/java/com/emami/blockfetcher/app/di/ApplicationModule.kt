@@ -11,6 +11,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApplicationModule {
 
+    /**
+     * Provides Logging Tree based on build-variant,
+     * For now, I just install debugTree.
+     */
     @Provides
     @Singleton
     fun provideLoggingTree(): Timber.Tree = Timber.DebugTree()

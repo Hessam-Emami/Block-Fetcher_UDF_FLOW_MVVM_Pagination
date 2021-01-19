@@ -7,6 +7,10 @@ import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 
+/**
+ * Delegates calls on retrofit service, returns a [Result] instead of
+ * retrofit's [Response]
+ */
 @ActivityRetainedScoped
 class VenueRemoteDataSource @Inject constructor(private val venueService: VenueService) {
     companion object {

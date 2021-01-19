@@ -42,8 +42,11 @@ class VenueRemoteMediator(
                 endOfPaginationReached = true
             )
         }
+
         page = page ?: Constants.DEFAULT_PAGE_SIZE
         localDataSource.saveLastKnownLocation(query)
+
+        //If we need fresh data, call remote server and cache into DB
         when (val apiResult =
             networkService.explore(query, page, Constants.DEFAULT_PAGE_SIZE)) {
             is Result.Success -> {

@@ -8,6 +8,12 @@ import timber.log.Timber
 import java.io.IOException
 import java.net.SocketTimeoutException
 
+/**
+ * Simple form of api call handling inspired by Official samples,
+ * Although it might have some problems like not having EmptyResponse,
+ * However it was not my intent to create the most optimal api handling utils
+ * on this project
+ */
 internal inline fun <T> invokeApiCall(remoteCall: () -> Response<T>): Result<T> =
     try {
         create(remoteCall())
@@ -21,7 +27,11 @@ internal inline fun <T> invokeApiCall(remoteCall: () -> Response<T>): Result<T> 
 //Inspired by GithubBrowserSample project
 private fun <T> create(throwable: Throwable): Result<T> {
     //Gracefully wrap known error and return
-    if (throwable is SocketTimeoutException || throwable is NoConnectivityException || throwable is IOException || throwable is HttpException) {
+    if (throwable is SocketTimeoutException ||
+        throwable is NoConnectivityException ||
+        throwable is IOException ||
+        throwable is HttpException
+    ) {
         return Result.Error(throwable.message
             ?: "Unknown error")
     }
@@ -39,6 +49,7 @@ private fun <T> create(response: Response<T>): Result<T> {
             /*
              * Unchecked cast: Any to T -> We are not going to make Result.Success accept nullable types or create Result.Success.Empty or
              * Handle EmptyResponse (code 204) ONLY FOR NOW
+             * THIS IS A KNOWN WARNING ISSUE WHICH WE CAN FIX LATER
              */
             Result.Success(
                 body ?: Any() as T

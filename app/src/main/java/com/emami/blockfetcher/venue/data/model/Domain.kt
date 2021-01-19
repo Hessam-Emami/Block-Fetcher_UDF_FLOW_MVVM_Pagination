@@ -81,4 +81,4 @@ data class VenueDetail constructor(
     val status: String?,
 )
 
-data class Rating(val rating: Double, val ratingColor: String, val ratingCount: Int)
+data class Rating(val rating: String, val ratingColor: String, val ratingCount: Int)

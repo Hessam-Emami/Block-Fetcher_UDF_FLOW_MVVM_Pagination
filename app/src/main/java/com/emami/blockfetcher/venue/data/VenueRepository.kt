@@ -26,12 +26,11 @@ class VenueRepository @Inject constructor(
     fun fetchVenues(
         lastLocation: LatitudeLongitude,
     ): Flow<PagingData<Venue>> {
+
         val localPagingSourceFactory = { localDataSource.getAllVenuesPaged() }
         val remotePagingSourceMediator =
-            VenueRemoteMediator(lastLocation,
-                localDataSource,
-                remoteSource,
-                cacheIntegrityChecker)
+            VenueRemoteMediator(lastLocation, localDataSource, remoteSource, cacheIntegrityChecker)
+
         return Pager(
             PagingConfig(pageSize = Constants.DEFAULT_PAGE_SIZE,
                 initialLoadSize = Constants.DEFAULT_PAGE_SIZE,
@@ -39,11 +38,17 @@ class VenueRepository @Inject constructor(
                 enablePlaceholders = false),
             pagingSourceFactory = localPagingSourceFactory,
             remoteMediator = remotePagingSourceMediator
-        ).flow.map { value: PagingData<VenueEntity> -> value.map { it.toDomain() } }
+        ).flow
+            .map {
+                //Maps Db to Domain object on emission
+                    value: PagingData<VenueEntity> ->
+                value.map { it.toDomain() }
+            }
     }
 
     suspend fun getVenueDetailById(id: String): Flow<Result<VenueDetail?>> = flow {
         if (id.isEmpty()) throw IllegalArgumentException("VenueDetail Id cannot be null or empty!")
+
         localDataSource.getVenueDetailById(id)
             .flowOn(Dispatchers.IO)
             .catch { Timber.e(it) }
@@ -60,6 +65,9 @@ class VenueRepository @Inject constructor(
             }
     }
 
+    /**
+     * If cache data is invalid or null, get fresh data and save
+     */
     private suspend fun FlowCollector<Result<VenueDetail?>>.fetchFromRemoteAndSave(
         id: String,
     ) {

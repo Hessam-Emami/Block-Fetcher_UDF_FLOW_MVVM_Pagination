@@ -9,6 +9,10 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Named
 import javax.inject.Singleton
 
+/**
+ * This is useful once we start wiring integration test,
+ * We can easily swap injected dependencies using hilt-testing
+ */
 @InstallIn(SingletonComponent::class)
 @Module
 object ConstantModule {

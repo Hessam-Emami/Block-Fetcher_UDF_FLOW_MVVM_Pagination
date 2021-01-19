@@ -18,6 +18,9 @@ import timber.log.Timber
 class DetailViewModel @ViewModelInject constructor(private val repository: VenueRepository) :
     BaseViewModel<DetailViewModel.DetailViewState, DetailViewModel.DetailViewEffect>(DetailViewState()) {
 
+    /**
+     * Collects from repository and emit's state or effect based on the collected state
+     */
     fun getVenueDetails(venueId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getVenueDetailById(venueId)
@@ -40,6 +43,10 @@ class DetailViewModel @ViewModelInject constructor(private val repository: Venue
         }
     }
 
+    /**
+     * We want to have some sort of Unidirectional-Data-Flow so view must call these methods
+     * and wait for corresponding state change or effect emission!
+     */
     fun launchOpenWebEffect(url: String?) = viewModelScope.launch {
         if (url.isNullOrEmpty()) _effect.emit(DetailViewEffect.Error("No website is associated by owner"))
         else _effect.emit(DetailViewEffect.OpenWebsite(url))

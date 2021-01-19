@@ -6,6 +6,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * Defines a base class to avoid repeating construction of viewState's [StateFlow] and
+ * viewEffect's [SharedFlow] in every [ViewModel]
+ */
 open class BaseViewModel<ViewState : BaseViewModel.BaseViewState, ViewEffect : BaseViewModel.BaseViewEffect>(
     initialViewState: ViewState,
 ) : ViewModel() {

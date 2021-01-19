@@ -70,6 +70,10 @@ class ExploreFragment :
         viewModel.startVenueDiscovery()
     }
 
+    /*
+     * We notify the model for state processing here, However we will only start/stop collecting  once
+     * the view is created.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {

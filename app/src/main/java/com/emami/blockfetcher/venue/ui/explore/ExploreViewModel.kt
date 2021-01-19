@@ -27,7 +27,9 @@ class ExploreViewModel @ViewModelInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 _state.emit(_state.value.copy(isLoading = true))
+                //Await for the current location
                 val lastLocation = locationManager.awaitLastLocation()
+                //Notify model with currentLocation and wait for processing
                 repository.fetchVenues(lastLocation).cachedIn(viewModelScope)
                     .onStart { _state.emit(_state.value.copy(isLoading = true)) }
                     .catch { cause ->
@@ -36,7 +38,9 @@ class ExploreViewModel @ViewModelInject constructor(
                     .collect {
                         _state.emit(_state.value.copy(list = it, isLoading = false))
                     }
-            } catch (e: UnknownLastLocationException) {
+            }
+            //This is for catching only LocationManager's awaitLastLocation which might throw exception
+            catch (e: UnknownLastLocationException) {
                 _state.emit(_state.value.copy(isLoading = false))
                 _effect.emit(ExploreViewEffect.Error(e.message ?: "Unknown Error"))
             }

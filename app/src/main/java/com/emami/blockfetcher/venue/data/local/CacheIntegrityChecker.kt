@@ -8,6 +8,9 @@ import java.time.Duration
 import java.time.Instant
 import javax.inject.Inject
 
+/**
+ * A ((simple)) Facade that acts as a data validator
+ */
 class CacheIntegrityChecker @Inject constructor(private val localDataSource: VenueLocalDataSource) {
 
     suspend fun isDataValidForGivenQuery(location: LatitudeLongitude): Boolean {
@@ -50,7 +53,6 @@ class CacheIntegrityChecker @Inject constructor(private val localDataSource: Ven
         val lastKnownLocation = localDataSource.getLastKnownLocation() ?: return true
         locationB.latitude = lastKnownLocation.lat
         locationB.longitude = lastKnownLocation.lng
-
         val distance = locationA.distanceTo(locationB)
         return distance < MAX_ALLOWED_DISTANCE_FROM_LAST_LOCATION
     }

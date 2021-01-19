@@ -11,7 +11,7 @@ abstract class BaseFragment<ViewState : BaseViewModel.BaseViewState, ViewEffect 
     Fragment() {
     protected abstract val _viewModel: BaseViewModel<ViewState, ViewEffect>
 
-
+    //Start collecting view state and effects on every fragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _viewModel.effect.onEach { renderEffect(it) }.launchIn(viewLifecycleOwner.lifecycleScope)

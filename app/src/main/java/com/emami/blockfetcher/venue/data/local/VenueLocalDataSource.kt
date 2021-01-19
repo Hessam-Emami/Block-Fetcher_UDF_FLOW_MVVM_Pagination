@@ -9,11 +9,19 @@ import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
 import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
 import com.emami.blockfetcher.venue.data.model.VenueDetailEntity
 import com.emami.blockfetcher.venue.data.model.VenueEntity
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import java.time.Instant
 import javax.inject.Inject
 
 
+/**
+ * This class delegates calls on Database and Cache-Property-File(sharedPref) on
+ * venue feature.
+ * It's better to split this class but for easy usability and simplicity
+ * I've decided to go like this
+ */
+@ActivityRetainedScoped
 class VenueLocalDataSource @Inject constructor(
     private val db: VenueRoomDatabase,
     private val sharedPref: SharedPreferences,
@@ -66,12 +74,6 @@ class VenueLocalDataSource @Inject constructor(
         db.withTransaction {
             venueDao.clearTable()
             remoteKeysDao.clearTable()
-            venueDetailDao.clearTable()
-        }
-    }
-
-    suspend fun invalidateVenueDetails() {
-        db.withTransaction {
             venueDetailDao.clearTable()
         }
     }

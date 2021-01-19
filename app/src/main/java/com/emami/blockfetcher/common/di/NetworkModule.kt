@@ -13,7 +13,7 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -37,6 +37,9 @@ object NetworkModule {
         chain.proceed(request)
     }
 
+    /**
+     * Adds common query params on each request
+     */
     @Provides
     @Named("interceptor_common_query_params")
     @Singleton
@@ -89,6 +92,6 @@ object NetworkModule {
         Retrofit.Builder()
             .baseUrl(url)
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .client(client).build()
 }

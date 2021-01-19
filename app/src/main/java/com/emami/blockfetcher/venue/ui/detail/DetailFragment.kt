@@ -57,7 +57,7 @@ class DetailFragment :
             map.setOnClickListener { viewModel.launchLocationEffect(venue.location.coordinate) }
             categoryTag.text = venue.primaryCategory.name
             categoryIcon.loadFromPath(venue.primaryCategory.getIconPath(100))
-            rating.text = venue.rating.rating.toString()
+            rating.text = venue.rating.rating
             rating.backgroundTintList =
                 ColorStateList.valueOf(Color.parseColor("#${venue.rating.ratingColor}"))
             venueIcon.loadFromPath(venue.venueMainIcon?.getIconPathByWidthHeight(500, 300))
