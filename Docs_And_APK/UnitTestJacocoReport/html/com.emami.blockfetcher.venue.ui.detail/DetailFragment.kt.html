@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DetailFragment.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.venue.ui.detail</a> &gt; <span class="el_source">DetailFragment.kt</span></div><h1>DetailFragment.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.venue.ui.detail
+
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import com.emami.blockfetcher.common.base.BaseFragment
+import com.emami.blockfetcher.common.base.BaseViewModel
+import com.emami.blockfetcher.common.extensions.loadFromPath
+import com.emami.blockfetcher.databinding.DetailFragmentBinding
+import com.emami.blockfetcher.venue.data.model.VenueDetail
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+
+
+@AndroidEntryPoint
+<span class="nc" id="L22">class DetailFragment :</span>
+<span class="nc" id="L23">    BaseFragment&lt;DetailViewModel.DetailViewState, DetailViewModel.DetailViewEffect&gt;() {</span>
+
+<span class="nc" id="L25">    private val viewModel: DetailViewModel by viewModels()</span>
+
+    override val _viewModel: BaseViewModel&lt;DetailViewModel.DetailViewState, DetailViewModel.DetailViewEffect&gt;
+<span class="nc" id="L28">        get() = viewModel</span>
+
+
+    private var _binding: DetailFragmentBinding? = null
+<span class="nc" id="L32">    private val binding get() = _binding!!</span>
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+<span class="nc" id="L36">        super.onViewCreated(view, savedInstanceState)</span>
+<span class="nc" id="L37">        val venueId = DetailFragmentArgs.fromBundle(requireArguments()).venueId</span>
+<span class="nc" id="L38">        viewModel.getVenueDetails(venueId)</span>
+<span class="nc" id="L39">        binding.retryButton.setOnClickListener { viewModel.getVenueDetails(venueId) }</span>
+<span class="nc" id="L40">    }</span>
+
+    override fun renderState(state: DetailViewModel.DetailViewState) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        binding.dataContainer.visibility = if (state.needsRetry) View.INVISIBLE else View.VISIBLE</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        binding.errorContainer.visibility = if (state.needsRetry) View.VISIBLE else View.GONE</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (state.venue != null) populateVenue(state.venue)</span>
+<span class="nc" id="L47">    }</span>
+
+    private fun populateVenue(venue: VenueDetail) {
+<span class="nc" id="L50">        with(binding) {</span>
+<span class="nc" id="L51">            name.text = venue.name</span>
+<span class="nc" id="L52">            description.text = venue.description</span>
+            description.visibility =
+<span class="nc bnc" id="L54" title="All 4 branches missed.">                if (venue.description.isEmpty()) View.GONE else View.VISIBLE</span>
+<span class="nc" id="L55">            website.setOnClickListener { viewModel.launchOpenWebEffect(venue.url) }</span>
+<span class="nc" id="L56">            phone.setOnClickListener { viewModel.launchCallPhoneEffect(venue.phoneNumber) }</span>
+<span class="nc" id="L57">            map.setOnClickListener { viewModel.launchLocationEffect(venue.location.coordinate) }</span>
+<span class="nc" id="L58">            categoryTag.text = venue.primaryCategory.name</span>
+<span class="nc" id="L59">            categoryIcon.loadFromPath(venue.primaryCategory.getIconPath(100))</span>
+<span class="nc" id="L60">            rating.text = venue.rating.rating.toString()</span>
+            rating.backgroundTintList =
+<span class="nc" id="L62">                ColorStateList.valueOf(Color.parseColor(&quot;#${venue.rating.ratingColor}&quot;))</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            venueIcon.loadFromPath(venue.venueMainIcon?.getIconPathByWidthHeight(500, 300))</span>
+<span class="nc" id="L64">            address.text = venue.location.address</span>
+<span class="nc bnc" id="L65" title="All 4 branches missed.">            likes.text = venue.likesCount?.toString() ?: &quot;0&quot;</span>
+<span class="nc" id="L66">        }</span>
+<span class="nc" id="L67">    }</span>
+
+    override fun renderEffect(effect: DetailViewModel.DetailViewEffect) {
+<span class="nc" id="L70">        when (effect) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            is DetailViewModel.DetailViewEffect.Error -&gt; Snackbar.make(requireView(),</span>
+<span class="nc" id="L72">                effect.string,</span>
+<span class="nc" id="L73">                Snackbar.LENGTH_SHORT).show()</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            is DetailViewModel.DetailViewEffect.OpenWebsite -&gt; {</span>
+<span class="nc" id="L75">                val openBrowserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))</span>
+<span class="nc" id="L76">                startActivity(openBrowserIntent)</span>
+            }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            is DetailViewModel.DetailViewEffect.OpenPhoneCall -&gt; {</span>
+<span class="nc" id="L79">                val callIntent = Intent(Intent.ACTION_DIAL)</span>
+<span class="nc" id="L80">                callIntent.data = Uri.parse(&quot;tel:${effect.phoneNumber}&quot;)</span>
+<span class="nc" id="L81">                startActivity(callIntent)</span>
+            }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            is DetailViewModel.DetailViewEffect.OpenLocationOnMap -&gt; {</span>
+<span class="nc" id="L84">                val gmmIntentUri = Uri.parse(&quot;geo:${effect.locationQuery}&quot;)</span>
+<span class="nc" id="L85">                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)</span>
+<span class="nc" id="L86">                startActivity(mapIntent)</span>
+            }
+        }
+<span class="nc" id="L89">    }</span>
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+<span class="nc" id="L96">        _binding = DetailFragmentBinding.inflate(inflater, container, false)</span>
+<span class="nc" id="L97">        return binding.root</span>
+    }
+
+    override fun onDestroyView() {
+<span class="nc" id="L101">        super.onDestroyView()</span>
+<span class="nc" id="L102">        _binding = null</span>
+<span class="nc" id="L103">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Base.BlockFetcher" parent="Theme.MaterialComponents.Light.DarkActionBar" />
+
+    <!--Light theme    -->
+    <style name="Theme.BlockFetcher" parent="Theme.Base.BlockFetcher">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/windows_blue</item>
+        <item name="colorPrimaryVariant">@color/blue_material_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/dodger_blue_22</item>
+        <item name="colorSecondaryVariant">@color/dodger_blue_22</item>
+        <item name="colorOnSecondary">@color/black_two</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:colorControlHighlight">@drawable/color_primary_alpha_10</item>
+        <!-- Other       -->
+        <item name="android:colorBackground">@color/white_two</item>
+    </style>
+
+
+    <style name="ThemeOverlay.BlockFetcher.Progressbar" parent="">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+    </style>
+</resources>

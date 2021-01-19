@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dto.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.venue.data.model</a> &gt; <span class="el_source">Dto.kt</span></div><h1>Dto.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.venue.data.model
+
+import com.google.gson.annotations.SerializedName
+
+/*
+ *  1. We strongly use @SerializedName on every property because as proguard
+ * obfuscates these classes and property names, we want Gson to serialize/deserialize properly!
+ *
+ *  2. Data classes are kept as Dto's subclass in order to prevent Redeclaration error by the compiler
+ *  between Dto, Entity, Domain objects that have the same name.
+ *
+ *  3. Mapping is auto generated and is not written by hand!
+ *
+ *  4. Classes are divided into Two regions, EXPLORE and DETAIL
+ */
+<span class="nc" id="L16">class Dto {</span>
+<span class="fc" id="L17">    data class BaseResponse&lt;T&gt;(</span>
+        @SerializedName(&quot;meta&quot;)
+<span class="nc" id="L19">        val meta: Meta,</span>
+        @SerializedName(&quot;response&quot;)
+<span class="fc" id="L21">        val response: T,</span>
+    )
+
+
+<span class="fc" id="L25">    data class Meta(</span>
+<span class="nc" id="L26">        @SerializedName(&quot;code&quot;) val code: Int,</span>
+<span class="nc" id="L27">        @SerializedName(&quot;requestId&quot;) val requestId: String,</span>
+    )
+
+    //region EXPLORE service
+<span class="nc" id="L31">    data class ExploreResponse(</span>
+<span class="nc" id="L32">        @SerializedName(&quot;warning&quot;) val warning: Warning?,</span>
+<span class="nc" id="L33">        @SerializedName(&quot;suggestedRadius&quot;) val suggestedRadius: Int?,</span>
+<span class="nc" id="L34">        @SerializedName(&quot;headerLocation&quot;) val headerLocation: String?,</span>
+<span class="nc" id="L35">        @SerializedName(&quot;headerFullLocation&quot;) val headerFullLocation: String?,</span>
+<span class="nc" id="L36">        @SerializedName(&quot;headerLocationGranularity&quot;) val headerLocationGranularity: String?,</span>
+<span class="nc" id="L37">        @SerializedName(&quot;totalResults&quot;) val totalResults: Int,</span>
+<span class="nc" id="L38">        @SerializedName(&quot;suggestedBounds&quot;) val suggestedBounds: SuggestedBounds?,</span>
+<span class="nc" id="L39">        @SerializedName(&quot;groups&quot;) val groups: List&lt;Group&gt;,</span>
+    )
+
+<span class="nc" id="L42">    data class SuggestedBounds(</span>
+<span class="nc" id="L43">        @SerializedName(&quot;ne&quot;) val ne: Ne,</span>
+<span class="nc" id="L44">        @SerializedName(&quot;sw&quot;) val sw: Sw,</span>
+    )
+
+<span class="nc" id="L47">    data class Group(</span>
+<span class="nc" id="L48">        @SerializedName(&quot;type&quot;) val type: String?,</span>
+<span class="nc" id="L49">        @SerializedName(&quot;name&quot;) val name: String?,</span>
+<span class="nc" id="L50">        @SerializedName(&quot;items&quot;) val items: List&lt;Item&gt;,</span>
+    )
+
+<span class="nc" id="L53">    data class Item(</span>
+<span class="nc" id="L54">        @SerializedName(&quot;reasons&quot;) val reasons: Reason?,</span>
+<span class="nc" id="L55">        @SerializedName(&quot;venue&quot;) val venue: VenueDTO,</span>
+    )
+
+
+<span class="fc" id="L59">    data class VenueDTO(</span>
+<span class="nc" id="L60">        @SerializedName(&quot;id&quot;) val id: String,</span>
+<span class="nc" id="L61">        @SerializedName(&quot;name&quot;) val name: String,</span>
+<span class="nc" id="L62">        @SerializedName(&quot;location&quot;) val location: Location,</span>
+<span class="nc" id="L63">        @SerializedName(&quot;categories&quot;) val categories: List&lt;Category&gt;,</span>
+<span class="nc" id="L64">        @SerializedName(&quot;popularityByGeo&quot;) val popularityByGeo: Double,</span>
+<span class="nc" id="L65">        @SerializedName(&quot;venuePage&quot;) val venuePage: VenuePage,</span>
+    ) {
+        val primaryCategory: Category
+<span class="fc" id="L68">            get() = findPrimaryCategory(categories)</span>
+    }
+
+<span class="fc" id="L71">    data class Category(</span>
+<span class="fc" id="L72">        @SerializedName(&quot;id&quot;) val id: String,</span>
+<span class="fc" id="L73">        @SerializedName(&quot;name&quot;) val name: String,</span>
+<span class="nc" id="L74">        @SerializedName(&quot;pluralName&quot;) val pluralName: String?,</span>
+<span class="nc" id="L75">        @SerializedName(&quot;shortName&quot;) val shortName: String?,</span>
+<span class="fc" id="L76">        @SerializedName(&quot;icon&quot;) val icon: Icon,</span>
+<span class="fc" id="L77">        @SerializedName(&quot;primary&quot;) val primary: Boolean,</span>
+    )
+
+<span class="fc" id="L80">    data class Icon(</span>
+<span class="fc" id="L81">        @SerializedName(&quot;prefix&quot;) val prefix: String,</span>
+<span class="fc" id="L82">        @SerializedName(&quot;suffix&quot;) val suffix: String,</span>
+<span class="nc" id="L83">        @SerializedName(&quot;width&quot;) val width: Int?,</span>
+<span class="nc" id="L84">        @SerializedName(&quot;height&quot;) val height: Int?,</span>
+    )
+
+
+<span class="nc" id="L88">    data class LabeledLatLng(</span>
+<span class="nc" id="L89">        @SerializedName(&quot;label&quot;) val label: String,</span>
+<span class="nc" id="L90">        @SerializedName(&quot;lat&quot;) val lat: Double,</span>
+<span class="nc" id="L91">        @SerializedName(&quot;lng&quot;) val lng: Double,</span>
+    )
+
+<span class="fc" id="L94">    data class Location(</span>
+<span class="fc" id="L95">        @SerializedName(&quot;address&quot;) val address: String?,</span>
+<span class="nc" id="L96">        @SerializedName(&quot;crossStreet&quot;) val crossStreet: String?,</span>
+<span class="fc" id="L97">        @SerializedName(&quot;lat&quot;) val lat: Double,</span>
+<span class="fc" id="L98">        @SerializedName(&quot;lng&quot;) val lng: Double,</span>
+<span class="nc" id="L99">        @SerializedName(&quot;labeledLatLngs&quot;) val labeledLatLngs: List&lt;LabeledLatLng&gt;?,</span>
+<span class="fc" id="L100">        @SerializedName(&quot;distance&quot;) val distance: Int,</span>
+<span class="nc" id="L101">        @SerializedName(&quot;postalCode&quot;) val postalCode: String?,</span>
+<span class="nc" id="L102">        @SerializedName(&quot;cc&quot;) val cc: String?,</span>
+<span class="nc" id="L103">        @SerializedName(&quot;city&quot;) val city: String?,</span>
+<span class="nc" id="L104">        @SerializedName(&quot;state&quot;) val state: String?,</span>
+<span class="nc" id="L105">        @SerializedName(&quot;country&quot;) val country: String?,</span>
+<span class="nc" id="L106">        @SerializedName(&quot;formattedAddress&quot;) val formattedAddress: List&lt;String&gt;?,</span>
+    )
+
+<span class="nc" id="L109">    data class Ne(</span>
+<span class="nc" id="L110">        @SerializedName(&quot;lat&quot;) val lat: Double,</span>
+<span class="nc" id="L111">        @SerializedName(&quot;lng&quot;) val lng: Double,</span>
+    )
+
+<span class="nc" id="L114">    data class Reason(</span>
+<span class="nc" id="L115">        @SerializedName(&quot;count&quot;) val count: Int,</span>
+<span class="nc" id="L116">        @SerializedName(&quot;items&quot;) val items: List&lt;Item&gt;,</span>
+    )
+
+
+<span class="nc" id="L120">    data class Sw(</span>
+<span class="nc" id="L121">        @SerializedName(&quot;lat&quot;) val lat: Double,</span>
+<span class="nc" id="L122">        @SerializedName(&quot;lng&quot;) val lng: Double,</span>
+    )
+
+
+<span class="fc" id="L126">    data class VenuePage(</span>
+<span class="nc" id="L127">        @SerializedName(&quot;id&quot;) val id: Int,</span>
+    )
+
+<span class="nc" id="L130">    data class Warning(</span>
+<span class="nc" id="L131">        @SerializedName(&quot;text&quot;) val text: String,</span>
+    )
+
+
+<span class="fc" id="L135">    data class ExploreQueryDto(</span>
+        // in form of: lat.lang
+<span class="nc" id="L137">        @SerializedName(PARAM_LAT_LANG) val coordinates: String,</span>
+        //Pass 0/1 flag
+<span class="nc" id="L139">        @SerializedName(PARAM_DISTANCE_SORT) val sortByDistance: Int,</span>
+<span class="nc" id="L140">        @SerializedName(PARAM_LIMIT) val paginationResultCount: Int,</span>
+<span class="nc" id="L141">        @SerializedName(PARAM_OFFSET) val paginationOffset: Int,</span>
+//---------------------------------- OPTIONAL PARAMS ----------------------------------
+<span class="pc" id="L143">        @SerializedName(&quot;near&quot;) val near: String? = null,</span>
+<span class="pc" id="L144">        @SerializedName(&quot;llAcc&quot;) val coordinatesAccuracy: Double? = null,</span>
+<span class="pc" id="L145">        @SerializedName(&quot;alt&quot;) val altitude: Int? = null,</span>
+<span class="pc" id="L146">        @SerializedName(&quot;altAcc&quot;) val altitudeAccuracy: Double? = null,</span>
+<span class="pc" id="L147">        @SerializedName(&quot;radius&quot;) val radius: Int? = null,</span>
+        //This is an enum type, no need to specify for now
+<span class="pc" id="L149">        @SerializedName(&quot;section&quot;) val venueType: String? = null,</span>
+<span class="pc" id="L150">        @SerializedName(&quot;categoryId&quot;) val categoryId: String? = null,</span>
+<span class="pc" id="L151">        @SerializedName(&quot;query&quot;) val query: String? = null,</span>
+        //This is an enum type, no need to specify for now
+<span class="pc" id="L153">        @SerializedName(&quot;novelty&quot;) val noveltyType: String? = null,</span>
+        //This is an enum type, no need to specify for now
+<span class="pc" id="L155">        @SerializedName(&quot;friendVisits&quot;) val friendVisits: String? = null,</span>
+<span class="pc" id="L156">        @SerializedName(&quot;time&quot;) val time: String? = null,</span>
+<span class="pc" id="L157">        @SerializedName(&quot;day&quot;) val day: String? = null,</span>
+<span class="pc" id="L158">        @SerializedName(&quot;lastVenue&quot;) val lastVenue: String? = null,</span>
+        //Pass 0/1 flag
+<span class="pc" id="L160">        @SerializedName(&quot;openNow&quot;) val openNow: Int? = null,</span>
+        //Pass 0/1 flag
+<span class="pc" id="L162">        @SerializedName(&quot;sortByPopularity&quot;) val sortByPopularity: Int? = null,</span>
+<span class="pc" id="L163">        @SerializedName(&quot;price&quot;) val price: Double? = null,</span>
+        //Pass 0/1 flag
+<span class="pc" id="L165">        @SerializedName(&quot;saved&quot;) val saved: Int? = null,</span>
+    ) {
+        /**
+         * We don't need other params, this is just for demonstration
+         */
+        companion object {
+            const val PARAM_LAT_LANG = &quot;ll&quot;
+            const val PARAM_DISTANCE_SORT = &quot;sortByDistance&quot;
+            const val PARAM_LIMIT = &quot;limit&quot;
+            const val PARAM_OFFSET = &quot;offset&quot;
+        }
+
+        /**
+         * Converts all of this class properties and values into a Map&lt;String,String&gt; in order to pass
+         * to the remote service as query params
+         *
+         * Only for demonstration purpose! , so i only converted these 4 required params below.
+         */
+
+<span class="fc" id="L184">        val propertyMap: Map&lt;String, String?&gt; =</span>
+<span class="fc" id="L185">            mapOf(</span>
+<span class="fc" id="L186">                PARAM_LAT_LANG to coordinates,</span>
+<span class="fc" id="L187">                PARAM_DISTANCE_SORT to sortByDistance.toString(),</span>
+<span class="fc" id="L188">                PARAM_LIMIT to paginationResultCount.toString(),</span>
+<span class="fc" id="L189">                PARAM_OFFSET to paginationOffset.toString()</span>
+            )
+    }
+
+    //endregion
+
+
+    //Original json has up to 50 classes, Since our use case is limited for this service, We
+    //get only the important parts of the response!
+    //region DETAIL service
+<span class="fc" id="L199">    data class VenueDetailResponse(</span>
+        @SerializedName(&quot;venue&quot;)
+<span class="fc" id="L201">        val venue: VenueDetail,</span>
+    )
+
+
+<span class="fc" id="L205">    data class VenueDetail(</span>
+        @SerializedName(&quot;id&quot;)
+<span class="fc" id="L207">        val id: String,</span>
+        @SerializedName(&quot;name&quot;)
+<span class="fc" id="L209">        val name: String,</span>
+        @SerializedName(&quot;contact&quot;)
+<span class="fc" id="L211">        val contact: Contact?,</span>
+        @SerializedName(&quot;location&quot;)
+<span class="fc" id="L213">        val location: Location,</span>
+        @SerializedName(&quot;categories&quot;)
+<span class="nc" id="L215">        val categories: List&lt;Category&gt;,</span>
+        @SerializedName(&quot;stats&quot;)
+<span class="nc" id="L217">        val stats: Stats?,</span>
+        @SerializedName(&quot;url&quot;)
+<span class="fc" id="L219">        val url: String?,</span>
+        @SerializedName(&quot;likes&quot;)
+<span class="fc" id="L221">        val likes: Likes,</span>
+        @SerializedName(&quot;rating&quot;)
+<span class="fc" id="L223">        val rating: Double,</span>
+        @SerializedName(&quot;ratingColor&quot;)
+<span class="fc" id="L225">        val ratingColor: String,</span>
+        @SerializedName(&quot;ratingSignals&quot;)
+<span class="fc" id="L227">        val ratingSignals: Int,</span>
+        @SerializedName(&quot;description&quot;)
+<span class="fc" id="L229">        val description: String?,</span>
+        @SerializedName(&quot;phrases&quot;)
+<span class="fc" id="L231">        val phrases: List&lt;Phrase&gt;?,</span>
+        @SerializedName(&quot;hours&quot;)
+<span class="fc" id="L233">        val hours: Hours?,</span>
+        @SerializedName(&quot;pageUpdates&quot;)
+<span class="fc" id="L235">        val pageUpdates: PageUpdates?,</span>
+        @SerializedName(&quot;bestPhoto&quot;)
+<span class="fc" id="L237">        val bestPhoto: Icon?,</span>
+    ) {
+        val primaryCategory: Category
+<span class="fc" id="L240">            get() = findPrimaryCategory(categories)</span>
+    }
+
+<span class="nc" id="L243">    data class Contact(</span>
+        @SerializedName(&quot;phone&quot;)
+<span class="nc" id="L245">        val phone: String?,</span>
+        @SerializedName(&quot;formattedPhone&quot;)
+<span class="nc" id="L247">        val formattedPhone: String?,</span>
+        @SerializedName(&quot;twitter&quot;)
+<span class="nc" id="L249">        val twitter: String?,</span>
+        @SerializedName(&quot;instagram&quot;)
+<span class="nc" id="L251">        val instagram: String?,</span>
+        @SerializedName(&quot;facebook&quot;)
+<span class="nc" id="L253">        val facebook: String?,</span>
+        @SerializedName(&quot;facebookUsername&quot;)
+<span class="nc" id="L255">        val facebookUsername: String?,</span>
+        @SerializedName(&quot;facebookName&quot;)
+<span class="nc" id="L257">        val facebookName: String?,</span>
+    )
+
+<span class="nc" id="L260">    data class Stats(</span>
+        @SerializedName(&quot;checkinsCount&quot;)
+<span class="nc" id="L262">        val checkinsCount: Int?,</span>
+        @SerializedName(&quot;usersCount&quot;)
+<span class="nc" id="L264">        val usersCount: Int?,</span>
+        @SerializedName(&quot;tipCount&quot;)
+<span class="nc" id="L266">        val tipCount: Int?,</span>
+        @SerializedName(&quot;visitsCount&quot;)
+<span class="nc" id="L268">        val visitsCount: Int?,</span>
+    )
+
+<span class="fc" id="L271">    data class Likes(</span>
+        @SerializedName(&quot;count&quot;)
+<span class="fc" id="L273">        val count: Int,</span>
+        @SerializedName(&quot;summary&quot;)
+<span class="nc" id="L275">        val summary: String,</span>
+    )
+
+<span class="nc" id="L278">    data class Phrase(</span>
+        @SerializedName(&quot;phrase&quot;)
+<span class="nc" id="L280">        val phrase: String,</span>
+        @SerializedName(&quot;count&quot;)
+<span class="nc" id="L282">        val count: Int,</span>
+    )
+
+<span class="nc" id="L285">    data class Hours(</span>
+        @SerializedName(&quot;status&quot;)
+<span class="nc" id="L287">        val status: String,</span>
+        @SerializedName(&quot;isOpen&quot;)
+<span class="nc" id="L289">        val isOpen: Boolean,</span>
+        @SerializedName(&quot;isLocalHoliday&quot;)
+<span class="nc" id="L291">        val isLocalHoliday: Boolean,</span>
+    )
+
+<span class="nc" id="L294">    data class PageUpdates(</span>
+        @SerializedName(&quot;count&quot;)
+<span class="nc" id="L296">        val count: Int,</span>
+    )
+
+    //endregion
+}
+
+<span class="fc bfc" id="L302" title="All 6 branches covered.">private fun findPrimaryCategory(list: List&lt;Dto.Category&gt;) = list.find { it.primary } ?: list[0]</span>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
