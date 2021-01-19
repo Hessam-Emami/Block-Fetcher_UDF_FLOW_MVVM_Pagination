@@ -23,6 +23,8 @@ ext {
     navigationVersion = "2.3.2"
     hiltPluginVersion = "2.28-alpha"
     detektVersion = "1.15.0-RC1"
+    jacocoVersion = "0.8.1"
+
     buildPlugins = [
             androidGradlePlugin      : "com.android.tools.build:gradle:$androidGradlePluginVersion",
             kotlinGradlePlugin       : "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinGradlePluginVersion",
@@ -33,7 +35,8 @@ ext {
             scabbard                 : "gradle.plugin.dev.arunkumar:scabbard-gradle-plugin:$scabbardPluginVersion",
             daggerHiltPlugin         : "com.google.dagger:hilt-android-gradle-plugin:$hiltPluginVersion",
             detekt                   : "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion",
-            detektFormatting         : "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion"
+            detektFormatting         : "io.gitlab.arturbosch.detekt:detekt-formatting:$detektVersion",
+            jacoco                   : "org.jacoco:org.jacoco.core:$jacocoVersion"
     ]
 
     //Architecture Component Libraries  ###################################################################################################################

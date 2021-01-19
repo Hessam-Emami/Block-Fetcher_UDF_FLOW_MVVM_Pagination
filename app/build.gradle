@@ -22,6 +22,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
+        //Ideally we can consider other approaches like using NDK for keeping sensitive data too
         buildConfigField("String", "CLIENT_ID", "\"RPRWWJ2JH3YMXUO3BFMP1GFPG4MYLD2M322LNMG5CWS3IHTC\"")
         buildConfigField("String", "CLIENT_SECRET", "\"YZC04XS42PDXJHV3NGASUF1YOUTP4XTXZXHOL03HMU4YBJMY\"")
         buildConfigField "String", "BASE_URL", "\"https://api.foursquare.com/\""
@@ -74,13 +75,11 @@ dependencies {
     implementation libraries.materialDesign
     implementation libraries.glide
     implementation libraries.fragment
-    implementation libraries.androidSecurity
     implementation libraries.activityKtx
     implementation libraries.playServicesLocation
 
 
     implementation libraries.retrofit
-    implementation libraries.moshiConverterFactory
     implementation libraries.loggingInterceptor
     implementation libraries.dagger
     implementation libraries.daggerHilt
@@ -126,30 +125,10 @@ dependencies {
 
     androidTestImplementation testLibraries.androidXextJunit
     androidTestImplementation testLibraries.espresso_core
-    androidTestImplementation testLibraries.mockWebServer
-    debugImplementation(testLibraries.fragmentTesting) {
-        exclude group: 'androidx.test', module: 'monitor'
-    }
-    androidTestImplementation testLibraries.coroutineTest
-
-    androidTestImplementation testLibraries.navTesting
-    androidTestImplementation testLibraries.mockito
-    implementation testLibraries.idlingResource
-
-    // For instrumented tests.
-    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.28-alpha'
-    // ...with Kotlin.
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.30.1-alpha'
     androidTestImplementation 'androidx.test:runner:1.3.0'
-    androidTestUtil 'androidx.test:orchestrator:1.3.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test:rules:1.3.0'
 
-// AndroidJUnitRunner and JUnit Rules
-    implementation 'androidx.test:runner:1.3.0'
-    implementation 'androidx.test:rules:1.3.0'
     detektPlugins buildPlugins.detektFormatting
-
-
 }
 
 //Detekt  ###################################################################################################################
