@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExploreFragment.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.venue.ui.explore</a> &gt; <span class="el_source">ExploreFragment.kt</span></div><h1>ExploreFragment.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.venue.ui.explore
+
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.emami.blockfetcher.common.base.BaseFragment
+import com.emami.blockfetcher.common.base.BaseViewModel
+import com.emami.blockfetcher.databinding.ExploreFragmentBinding
+import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingAdapter
+import com.emami.blockfetcher.venue.ui.explore.adapter.VenuePagingLoadStateAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+<span class="nc" id="L25">class ExploreFragment :</span>
+<span class="nc" id="L26">    BaseFragment&lt;ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect&gt;() {</span>
+
+<span class="nc" id="L28">    private val viewModel: ExploreViewModel by viewModels()</span>
+
+    override val _viewModel: BaseViewModel&lt;ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect&gt;
+<span class="nc" id="L31">        get() = viewModel</span>
+
+    //According to the docs, this doesn't need to detach
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher&lt;String&gt;
+
+
+    private var _binding: ExploreFragmentBinding? = null
+<span class="nc" id="L38">    private val binding get() = _binding!!</span>
+
+
+    override fun onStart() {
+<span class="nc" id="L42">        super.onStart()</span>
+        //User might revoke the permission while the app is open, So we check this regularly
+<span class="nc" id="L44">        checkAndRequestLocationPermission()</span>
+<span class="nc" id="L45">    }</span>
+
+<span class="nc" id="L47">    lateinit var venuePagingAdapter: VenuePagingAdapter</span>
+
+    override fun renderEffect(effect: ExploreViewModel.ExploreViewEffect) {
+<span class="nc" id="L50">        when (effect) {</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            is ExploreViewModel.ExploreViewEffect.Error -&gt; Snackbar.make(requireView(),</span>
+<span class="nc" id="L52">                effect.string,</span>
+<span class="nc" id="L53">                Snackbar.LENGTH_SHORT).show()</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            is ExploreViewModel.ExploreViewEffect.NavigateToDetails -&gt; openVenueDetailScreen(</span>
+<span class="nc" id="L55">                effect.venueId)</span>
+        }
+<span class="nc" id="L57">    }</span>
+
+    private fun openVenueDetailScreen(venueId: String) {
+<span class="nc" id="L60">        findNavController().navigate(ExploreFragmentDirections.actionExploreFragmentToDetailFragment(</span>
+<span class="nc" id="L61">            venueId))</span>
+<span class="nc" id="L62">    }</span>
+
+    override fun renderState(state: ExploreViewModel.ExploreViewState) {
+<span class="nc" id="L65">        venuePagingAdapter.submitData(viewLifecycleOwner.lifecycle, state.list)</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE</span>
+<span class="nc" id="L67">    }</span>
+
+    private fun onLocationPermissionAvailable() {
+<span class="nc" id="L70">        viewModel.startVenueDiscovery()</span>
+<span class="nc" id="L71">    }</span>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+<span class="nc" id="L74">        super.onCreate(savedInstanceState)</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {</span>
+<span class="nc" id="L76">            onLocationPermissionAvailable()</span>
+        }
+<span class="nc" id="L78">    }</span>
+
+    override fun onAttach(context: Context) {
+<span class="nc" id="L81">        super.onAttach(context)</span>
+        requestPermissionLauncher =
+<span class="nc" id="L83">            requireActivity().registerForActivityResult(</span>
+<span class="nc" id="L84">                ActivityResultContracts.RequestPermission()</span>
+<span class="nc" id="L85">            ) { isGranted: Boolean -&gt;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                if (isGranted) {</span>
+<span class="nc" id="L87">                    onLocationPermissionAvailable()</span>
+                } else {
+<span class="nc" id="L89">                    onLocationPermissionDenied()</span>
+                }
+<span class="nc" id="L91">            }</span>
+<span class="nc" id="L92">    }</span>
+
+    private fun onLocationPermissionDenied() {
+<span class="nc" id="L95">        MaterialAlertDialogBuilder(requireContext()).setCancelable(false)</span>
+<span class="nc" id="L96">            .setTitle(&quot;Location Not Available&quot;)</span>
+<span class="nc" id="L97">            .setMessage(&quot;We can't recommend any places without having you're location. You can always grant permission from the settings menu! &quot;)</span>
+<span class="nc" id="L98">            .setNegativeButton(</span>
+<span class="nc" id="L99">                &quot;Exit&quot;</span>
+<span class="nc" id="L100">            ) { _, _ -&gt; requireActivity().finish() }</span>
+<span class="nc" id="L101">            .show()</span>
+<span class="nc" id="L102">    }</span>
+
+    private fun isPermissionGranted(permission: String): Boolean {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        return ContextCompat.checkSelfPermission(</span>
+<span class="nc" id="L106">            requireContext(),</span>
+<span class="nc" id="L107">            permission</span>
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    /*
+     * According to the existing feature, We only need location permission while the user is on this screen
+     * So we avoid getting the permission in higher level components(Activity) for now.
+     */
+    private fun checkAndRequestLocationPermission() {
+<span class="nc" id="L116">        val permission =</span>
+<span class="nc" id="L117">            Manifest.permission.ACCESS_FINE_LOCATION</span>
+<span class="nc" id="L118">        val isGranted: Boolean = isPermissionGranted(permission)</span>
+<span class="nc" id="L119">        when {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            !isGranted -&gt; {</span>
+<span class="nc" id="L121">                requestPermissionLauncher.launch(permission)</span>
+            }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            shouldShowRequestPermissionRationale(permission) -&gt; {</span>
+                //Show an explanation before requesting!
+<span class="nc" id="L125">                onShowingPermissionRational(permission)</span>
+            }
+        }
+<span class="nc" id="L128">    }</span>
+
+
+    private fun onShowingPermissionRational(permission: String) {
+<span class="nc" id="L132">        MaterialAlertDialogBuilder(requireContext()).setCancelable(false)</span>
+<span class="nc" id="L133">            .setTitle(&quot;Usage of your location&quot;)</span>
+<span class="nc" id="L134">            .setMessage(&quot;Block Fetcher needs to access you're location in order to find the nearest venues for you&quot;)</span>
+<span class="nc" id="L135">            .setPositiveButton(</span>
+<span class="nc" id="L136">                &quot;Okay&quot;</span>
+<span class="nc" id="L137">            ) { _, _ -&gt; requestPermissionLauncher.launch(permission) }</span>
+<span class="nc" id="L138">            .show()</span>
+<span class="nc" id="L139">    }</span>
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+<span class="nc" id="L146">        _binding = ExploreFragmentBinding.inflate(inflater, container, false)</span>
+<span class="nc" id="L147">        initView()</span>
+<span class="nc" id="L148">        return binding.root</span>
+    }
+
+    private fun initView() {
+<span class="nc" id="L152">        venuePagingAdapter = VenuePagingAdapter(viewModel::onVenueSelected)</span>
+        binding.pagingRecyclerView.adapter =
+<span class="nc" id="L154">            venuePagingAdapter.withLoadStateFooter(VenuePagingLoadStateAdapter(venuePagingAdapter::retry))</span>
+<span class="nc" id="L155">    }</span>
+
+    override fun onDestroyView() {
+<span class="nc" id="L158">        super.onDestroyView()</span>
+<span class="nc" id="L159">        _binding = null</span>
+<span class="nc" id="L160">    }</span>
+
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

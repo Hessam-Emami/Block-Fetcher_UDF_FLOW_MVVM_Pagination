@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseViewModel.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.common.base</a> &gt; <span class="el_source">BaseViewModel.kt</span></div><h1>BaseViewModel.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.common.base
+
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+
+<span class="nc" id="L9">open class BaseViewModel&lt;ViewState : BaseViewModel.BaseViewState, ViewEffect : BaseViewModel.BaseViewEffect&gt;(</span>
+    initialViewState: ViewState,
+<span class="nc" id="L11">) : ViewModel() {</span>
+<span class="nc" id="L12">    protected val _state = MutableStateFlow(initialViewState)</span>
+    val state: StateFlow&lt;ViewState&gt;
+<span class="nc" id="L14">        get() = _state</span>
+
+    //SharedFlow with 0 replay acts like SingleLiveEvent. Useful for emitting ViewEffects (one-shot state calls)
+<span class="nc" id="L17">    protected val _effect = MutableSharedFlow&lt;ViewEffect&gt;(replay = 0)</span>
+    val effect: SharedFlow&lt;ViewEffect&gt;
+<span class="nc" id="L19">        get() = _effect</span>
+
+    interface BaseViewEffect
+    interface BaseViewState
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

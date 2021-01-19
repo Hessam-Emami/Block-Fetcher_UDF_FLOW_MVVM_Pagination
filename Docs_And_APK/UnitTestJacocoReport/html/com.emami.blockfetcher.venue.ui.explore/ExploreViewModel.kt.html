@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExploreViewModel.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.venue.ui.explore</a> &gt; <span class="el_source">ExploreViewModel.kt</span></div><h1>ExploreViewModel.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.venue.ui.explore
+
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.emami.blockfetcher.common.base.BaseViewModel
+import com.emami.blockfetcher.common.exception.UnknownLastLocationException
+import com.emami.blockfetcher.venue.data.LocationManager
+import com.emami.blockfetcher.venue.data.VenueRepository
+import com.emami.blockfetcher.venue.data.model.Venue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
+import timber.log.Timber
+
+<span class="nc" id="L19">class ExploreViewModel @ViewModelInject constructor(</span>
+    private val locationManager: LocationManager,
+    private val repository: VenueRepository,
+) :
+<span class="nc" id="L23">    BaseViewModel&lt;ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect&gt;(</span>
+<span class="nc" id="L24">        ExploreViewState()) {</span>
+
+    fun startVenueDiscovery() {
+<span class="nc bnc" id="L27" title="All 7 branches missed.">        viewModelScope.launch(Dispatchers.IO) {</span>
+<span class="nc" id="L28">            try {</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                _state.emit(_state.value.copy(isLoading = true))</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">                val lastLocation = locationManager.awaitLastLocation()</span>
+<span class="nc" id="L31">                repository.fetchVenues(lastLocation).cachedIn(viewModelScope)</span>
+<span class="nc bnc" id="L32" title="All 5 branches missed.">                    .onStart { _state.emit(_state.value.copy(isLoading = true)) }</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">                    .catch { cause -&gt;</span>
+<span class="nc" id="L34">                        Timber.e(cause)</span>
+<span class="nc" id="L35">                    }</span>
+<span class="nc" id="L36">                    .collect {</span>
+                        _state.emit(_state.value.copy(list = it, isLoading = false))
+                    }
+<span class="nc" id="L39">            } catch (e: UnknownLastLocationException) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">                _state.emit(_state.value.copy(isLoading = false))</span>
+<span class="nc bnc" id="L41" title="All 4 branches missed.">                _effect.emit(ExploreViewEffect.Error(e.message ?: &quot;Unknown Error&quot;))</span>
+<span class="nc" id="L42">            }</span>
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">    }</span>
+
+    fun onVenueSelected(venue: Venue) {
+<span class="nc bnc" id="L47" title="All 3 branches missed.">        viewModelScope.launch {</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            _effect.emit(ExploreViewEffect.NavigateToDetails(venue.id))</span>
+<span class="nc" id="L49">        }</span>
+<span class="nc" id="L50">    }</span>
+
+<span class="nc" id="L52">    data class ExploreViewState(</span>
+<span class="nc" id="L53">        val list: PagingData&lt;Venue&gt; = PagingData.empty(),</span>
+<span class="nc" id="L54">        val isLoading: Boolean = false,</span>
+    ) : BaseViewState
+
+    sealed class ExploreViewEffect() : BaseViewEffect {
+<span class="nc" id="L58">        data class Error(val string: String) : ExploreViewEffect()</span>
+<span class="nc" id="L59">        data class NavigateToDetails(val venueId: String) : ExploreViewEffect()</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

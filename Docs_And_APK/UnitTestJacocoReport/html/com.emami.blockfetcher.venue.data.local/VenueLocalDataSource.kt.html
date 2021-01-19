@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VenueLocalDataSource.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.venue.data.local</a> &gt; <span class="el_source">VenueLocalDataSource.kt</span></div><h1>VenueLocalDataSource.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.venue.data.local
+
+import android.content.SharedPreferences
+import androidx.core.content.edit
+import androidx.paging.PagingSource
+import androidx.room.withTransaction
+import com.emami.blockfetcher.venue.data.local.db.VenueRoomDatabase
+import com.emami.blockfetcher.venue.data.model.LatitudeLongitude
+import com.emami.blockfetcher.venue.data.model.RemoteKeysEntity
+import com.emami.blockfetcher.venue.data.model.VenueDetailEntity
+import com.emami.blockfetcher.venue.data.model.VenueEntity
+import kotlinx.coroutines.flow.Flow
+import java.time.Instant
+import javax.inject.Inject
+
+
+<span class="nc" id="L17">class VenueLocalDataSource @Inject constructor(</span>
+    private val db: VenueRoomDatabase,
+    private val sharedPref: SharedPreferences,
+) {
+<span class="nc" id="L21">    private val venueDao = db.venueDao()</span>
+<span class="nc" id="L22">    private val remoteKeysDao = db.remoteKeysDao()</span>
+<span class="nc" id="L23">    private val venueDetailDao = db.venueDetailDao()</span>
+
+    private suspend fun insertRemoteKeys(remoteKeys: List&lt;RemoteKeysEntity&gt;) {
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        remoteKeysDao.insertAll(remoteKeys)</span>
+<span class="nc" id="L27">    }</span>
+
+    private suspend fun insertVenues(venues: List&lt;VenueEntity&gt;) {
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        venueDao.insertAll(venues)</span>
+<span class="nc" id="L31">    }</span>
+
+    fun getLastKnownLocation(): LatitudeLongitude? {
+<span class="nc" id="L34">        val lat = sharedPref.getString(PREF_LAT_KEY, null)</span>
+<span class="nc" id="L35">        val lng = sharedPref.getString(PREF_LNG_KEY, null)</span>
+<span class="nc bnc" id="L36" title="All 4 branches missed.">        return if (lat != null &amp;&amp; lng != null) LatitudeLongitude(lat.toDouble(), lng.toDouble())</span>
+<span class="nc" id="L37">        else null</span>
+    }
+
+    fun saveLastKnownLocation(location: LatitudeLongitude) {
+<span class="nc" id="L41">        sharedPref.edit {</span>
+<span class="nc" id="L42">            putString(PREF_LAT_KEY, location.lat.toString())</span>
+<span class="nc" id="L43">            putString(PREF_LNG_KEY, location.lng.toString())</span>
+<span class="nc" id="L44">        }</span>
+<span class="nc" id="L45">    }</span>
+
+    suspend fun getRemoteKeyById(venueId: String): RemoteKeysEntity? {
+<span class="nc bnc" id="L48" title="All 5 branches missed.">        return db.withTransaction { remoteKeysDao.getRemoteKeyById(venueId) }</span>
+    }
+
+    fun getAllVenuesPaged(): PagingSource&lt;Int, VenueEntity&gt; {
+<span class="nc" id="L52">        return venueDao.getAllVenuesPaged()</span>
+    }
+
+    private suspend fun getAllVenues(): List&lt;VenueEntity&gt; {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return db.withTransaction { venueDao.getAllVenues() }</span>
+    }
+
+    suspend fun getOldestVenueRecordCreationTime(): Instant? {
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        return db.withTransaction { venueDao.getOldestRecord() }</span>
+    }
+
+<span class="nc" id="L63">    suspend fun getCachedVenueCount(): Int = getAllVenues().size</span>
+
+    suspend fun invalidateData() {
+<span class="nc bnc" id="L66" title="All 7 branches missed.">        db.withTransaction {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            venueDao.clearTable()</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            remoteKeysDao.clearTable()</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            venueDetailDao.clearTable()</span>
+<span class="nc" id="L70">        }</span>
+<span class="nc" id="L71">    }</span>
+
+    suspend fun insertVenueAndCorrespondingKeys(
+        list: List&lt;VenueEntity&gt;,
+        keys: List&lt;RemoteKeysEntity&gt;,
+    ) {
+<span class="nc bnc" id="L77" title="All 6 branches missed.">        db.withTransaction {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            insertVenues(list)</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            insertRemoteKeys(keys)</span>
+<span class="nc" id="L80">        }</span>
+<span class="nc" id="L81">    }</span>
+
+    fun getVenueDetailById(id: String): Flow&lt;VenueDetailEntity?&gt; {
+<span class="nc" id="L84">        return venueDetailDao.getVenueByIdFlow(id)</span>
+    }
+
+    suspend fun getVenueDetailCreationTime(id: String): Instant? {
+<span class="nc bnc" id="L88" title="All 4 branches missed.">        return db.withTransaction { venueDetailDao.getVenueById(id)?.created_at }</span>
+    }
+
+    suspend fun insertVenueDetail(venueDetailEntity: VenueDetailEntity) {
+<span class="nc bnc" id="L92" title="All 7 branches missed.">        db.withTransaction { venueDetailDao.insert(venueDetailEntity) }</span>
+<span class="nc" id="L93">    }</span>
+
+    private companion object {
+        const val PREF_LAT_KEY = &quot;pref-lat-key&quot;
+        const val PREF_LNG_KEY = &quot;pref-lng-key&quot;
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NetworkModule.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">app</a> &gt; <a href="index.source.html" class="el_package">com.emami.blockfetcher.common.di</a> &gt; <span class="el_source">NetworkModule.kt</span></div><h1>NetworkModule.kt</h1><pre class="source lang-java linenums">package com.emami.blockfetcher.common.di
+
+import com.emami.blockfetcher.BuildConfig
+import com.emami.blockfetcher.common.Constants
+import com.emami.blockfetcher.common.exception.NoConnectivityException
+import com.emami.blockfetcher.common.util.ConnectivityChecker
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
+import javax.inject.Singleton
+
+@InstallIn(SingletonComponent::class)
+@Module
+<span class="fc" id="L22">object NetworkModule {</span>
+
+    @Provides
+    @Named(&quot;interceptor_logging&quot;)
+    @Singleton
+<span class="nc" id="L27">    internal fun provideLoggingInterceptor(): Interceptor = HttpLoggingInterceptor().apply {</span>
+        level =
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE</span>
+<span class="nc" id="L30">    }</span>
+
+    @Provides
+    @Named(&quot;interceptor_header_accept&quot;)
+    @Singleton
+<span class="fc" id="L35">    internal fun provideAcceptHeaderInterceptor(): Interceptor = Interceptor { chain -&gt;</span>
+<span class="fc" id="L36">        val request = chain.request().newBuilder().addHeader(&quot;Accept&quot;, &quot;application/json&quot;).build()</span>
+<span class="fc" id="L37">        chain.proceed(request)</span>
+<span class="fc" id="L38">    }</span>
+
+    @Provides
+    @Named(&quot;interceptor_common_query_params&quot;)
+    @Singleton
+    internal fun provideCommonQueryParamsInterceptor(
+        @Named(&quot;constant_client_id&quot;) clientId: String,
+        @Named(&quot;constant_client_secret&quot;) clientSecret: String,
+        @Named(&quot;constant_api_version&quot;) version: String,
+    ): Interceptor =
+<span class="fc" id="L48">        Interceptor { chain -&gt;</span>
+<span class="fc" id="L49">            val request = chain.request()</span>
+<span class="fc" id="L50">            val newUrl =</span>
+<span class="fc" id="L51">                request.url.newBuilder()</span>
+<span class="fc" id="L52">                    .addQueryParameter(Constants.QUERY_CLIENT_ID, clientId)</span>
+<span class="fc" id="L53">                    .addQueryParameter(Constants.QUERY_CLIENT_SECRET, clientSecret)</span>
+<span class="fc" id="L54">                    .addQueryParameter(Constants.QUERY_VERSION, version)</span>
+<span class="fc" id="L55">                    .build()</span>
+<span class="fc" id="L56">            val newRequest = request.newBuilder().url(newUrl).build()</span>
+<span class="fc" id="L57">            chain.proceed(newRequest)</span>
+<span class="fc" id="L58">        }</span>
+
+    @Provides
+    @Singleton
+    @Named(&quot;interceptor_connectivity_checker&quot;)
+    //Checks connectivity before the every call shoots onto the network
+    fun provideInternetConnectivityInterceptor(connectivityChecker: ConnectivityChecker): Interceptor =
+<span class="nc" id="L65">        Interceptor {</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (!connectivityChecker.isNetworkActive()) throw NoConnectivityException()</span>
+<span class="nc" id="L67">            it.proceed(it.request())</span>
+<span class="nc" id="L68">        }</span>
+
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        @Named(&quot;interceptor_logging&quot;) loggingInterceptor: Interceptor,
+        @Named(&quot;interceptor_connectivity_checker&quot;) connectivityInterceptor: Interceptor,
+        @Named(&quot;interceptor_header_accept&quot;) acceptHeaderInterceptor: Interceptor,
+        @Named(&quot;interceptor_common_query_params&quot;) tokenHeaderInterceptor: Interceptor,
+    ): OkHttpClient =
+<span class="nc" id="L79">        OkHttpClient.Builder()</span>
+<span class="nc" id="L80">            .addInterceptor(acceptHeaderInterceptor)</span>
+<span class="nc" id="L81">            .addInterceptor(tokenHeaderInterceptor)</span>
+<span class="nc" id="L82">            .addInterceptor(loggingInterceptor)</span>
+<span class="nc" id="L83">            .addInterceptor(connectivityInterceptor)</span>
+<span class="nc" id="L84">            .build()</span>
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(client: OkHttpClient, @Named(&quot;constant_base_url&quot;) url: String): Retrofit =
+<span class="fc" id="L89">        Retrofit.Builder()</span>
+<span class="fc" id="L90">            .baseUrl(url)</span>
+<span class="fc" id="L91">            .addCallAdapterFactory(CoroutineCallAdapterFactory())</span>
+<span class="fc" id="L92">            .addConverterFactory(GsonConverterFactory.create())</span>
+<span class="fc" id="L93">            .client(client).build()</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
