@@ -1,6 +1,7 @@
 package com.emami.blockfetcher.venue.ui.explore
 
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -23,9 +24,14 @@ class ExploreViewModel @ViewModelInject constructor(
     BaseViewModel<ExploreViewModel.ExploreViewState, ExploreViewModel.ExploreViewEffect>(
         ExploreViewState()) {
 
+    private var isDiscoveryOnceHappened = false
     fun startVenueDiscovery() {
+        if (isDiscoveryOnceHappened) {
+            return
+        }
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                isDiscoveryOnceHappened = true
                 _state.emit(_state.value.copy(isLoading = true))
                 //Await for the current location
                 val lastLocation = locationManager.awaitLastLocation()
@@ -63,5 +69,8 @@ class ExploreViewModel @ViewModelInject constructor(
         data class NavigateToDetails(val venueId: String) : ExploreViewEffect()
     }
 
+    private companion object{
+        const val SAVED_STATE_IS_HAPPENED = "ssih"
+    }
 }
 
