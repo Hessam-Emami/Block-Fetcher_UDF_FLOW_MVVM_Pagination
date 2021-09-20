@@ -1,6 +1,6 @@
 # Block Fetcher
 
-Block Fetcher is a simple app that shows nearby places to the user, It's a Foursquare clone.
+Block Fetcher is a simple app that shows nearby places to the user and is leveraging Foursquare public Api.
 
 # Screenshots
 
